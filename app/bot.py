@@ -13,9 +13,9 @@ from logger import Logger
 
 # Переменные окружения
 load_dotenv()
-ROOT = getenv('ROOT')
-TOKEN = getenv('TOKEN')
-AUTH = getenv('AUTH')
+ROOT = str(getenv('ROOT'))
+TOKEN = str(getenv('BOT_TOKEN'))
+AUTH = str(getenv('AI_AUTH'))
 
 # Настройка бота
 bot = Bot(token=TOKEN)
@@ -45,6 +45,8 @@ def get_main_menu() -> ReplyKeyboardMarkup:
 async def cmd_start(message: Message):
     """Точка входа"""
     await message.reply("Привет, это РПГ игра с участием ИИ.", reply_markup=get_main_menu())
+    res = game.next_floor()
+    await message.reply(res)
 
 @router.message(F.text)
 async def custom_action(message: Message):
@@ -56,11 +58,13 @@ async def custom_action(message: Message):
         await message.answer("Error")
         return
 
-    response = ai.parse(player_input)
+    response = ai.parse(player_input, game.get_targets(), game.get_items())
     actions = pr.preprocess(response)
     res = game.act(actions)
+    response = ai.summery(player_input, res)
 
-    await message.answer(res)
+    await message.answer(response)
+    await message.answer(str(game.character))
 
 
 if __name__ == '__main__':

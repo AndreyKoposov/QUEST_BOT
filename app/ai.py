@@ -15,7 +15,7 @@ class AI():
             timeout=15
         )
 
-    def parse(self, player_input: str):
+    def parse(self, player_input: str, targets: list[str], items: list[str]):
         """Парсит ввод от пользователя"""
         query = """
         ## Задача
@@ -23,8 +23,8 @@ class AI():
         Игрок написал: """ + player_input + """.
 
         Доступные действия: attack, defend, move, talk, wait, explore, item_use, item_drop.
-        Доступные цели: player, goblin, chest, door, left_room, right_room, hall.
-        Доступные предметы: sword, key, torch, health_potion.
+        Доступные цели: """ + ', '.join([str(t) for t in targets]) + """.
+        Доступные предметы: """ + ', '.join([str(i) for i in items]) + """.
 
         ## Формат ответа
         Проанализируй текст и верни строго валидный JSON по этой схеме:
@@ -33,14 +33,16 @@ class AI():
                 "action": (одно из действий),
                 "target": (имя цели),
                 "item_used": (имя предмета),
-                "skill_used": (имя навыка),
                 "attack_attrs": {
-                    "force": (light/normal/heavy),
-                    "aimed_to": (legs/hands/body/head),
+                    "force": (light/normal/heavy/deadly),
+                    "aimed_to": (legs/hands/body/head/eyes/back),
                 },
                 "move_attrs": {
                     "speed": (slow/normal/fast),
                     "stealth": (true/false),
+                },
+                "defend_attrs": {
+                    "type": (block/evasion/parry),
                 },
                 "talk_attrs": {
                     "type": (friendly/aggressive/neutral),
@@ -49,12 +51,6 @@ class AI():
                 "wait_attrs": {
                     "time": (время в минутах),
                     "type": (rest/sleep/default),
-                },
-                "item_use_attrs": {
-                    "count": 1.0,
-                },
-                "item_drop_attrs": {
-                    "count": 1.0,
                 },
             },
         ]
@@ -76,5 +72,18 @@ class AI():
         return ""
 
 
-    def summery(self):
+    def summery(self, player_input, results) -> str:
         """Подводит итог действиям игрока и их результатам"""
+        query = """
+        ## Задача
+        Ты — рассказчик в текстовой фэнтэзи RPG.
+        Игрок написал: """ + player_input + """.
+        Результат его действий: """ + results + """.
+
+        ## Формат ответа
+        Интересно и в стиле фэнтэзи опиши произошедшие события (2-3 предложения). Обращайся к игроку на Вы.
+        """
+
+        return str(self.giga.invoke(query).content)
+
+        

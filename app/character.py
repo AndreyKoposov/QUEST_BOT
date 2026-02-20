@@ -1,14 +1,14 @@
 class Character():
     def __init__(self) -> None:
         self.name = "Andrey"
-        self.hp = 24
+        self.hp = 30
         self.max_hp = 30
-        self.weapon = "Меч королей"
+        self.weapon = "sword"
         self.armor = "Кольчуга"
-        self.strength = 7
-        self.agility = 5
-        self.intellect = 5
-        self.fatigue = 5
+        self.strength = 6
+        self.agility = 6
+        self.intellect = 6
+        self.fatigue = 1
         self.money = 145
         self.items = ["меч", "зелье", "веревка"]
         self.effects = [("ослеплен", 2), ("силен", 1)]
