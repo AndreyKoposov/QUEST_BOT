@@ -1,0 +1,72 @@
+[
+    {
+        "name": "body",
+        "damage_mul": 1,
+        "agility_mul": 1,
+        "effects": [
+            {
+                "name": "bleed",
+                "chance_mul": 1
+            }
+        ]
+    },
+    {
+        "name": "hands",
+        "damage_mul": 0.5,
+        "agility_mul": 1.25,
+        "effects": [
+            {
+                "name": "weak",
+                "chance_mul": 2
+            }
+        ]
+    },
+    {
+        "name": "legs",
+        "damage_mul": 0.75,
+        "agility_mul": 1.25,
+        "effects": [
+            {
+                "name": "slow",
+                "chance_mul": 2
+            }
+        ]
+    },
+    {
+        "name": "head",
+        "damage_mul": 4,
+        "agility_mul": 3,
+        "effects": [
+            {
+                "name": "stun",
+                "chance_mul": 2
+            }
+        ]
+    },
+    {
+        "name": "eyes",
+        "damage_mul": 1,
+        "agility_mul": 2,
+        "effects": [
+            {
+                "name": "blind",
+                "chance_mul": 3
+            }
+        ]
+    },
+    {
+        "name": "back",
+        "damage_mul": 2,
+        "agility_mul": 2,
+        "effects": [
+            {
+                "name": "stun",
+                "chance_mul": 3
+            },
+            {
+                "name": "bleed",
+                "chance_mul": 3
+            }
+        ]
+    }
+]

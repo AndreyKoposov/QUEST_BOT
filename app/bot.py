@@ -29,6 +29,8 @@ ai = AI(AUTH)
 game = Game()
 pr = Preprocessor()
 
+last_response = ""
+
 def get_main_menu() -> ReplyKeyboardMarkup:
     """Создает меню"""
     keyboard = ReplyKeyboardMarkup(
@@ -53,18 +55,21 @@ async def custom_action(message: Message):
     """Обработчик сообщения от пользователя"""
     if message.text:
         player_input = message.text.strip()[:150]
-        await message.answer("Принято")
     else:
         await message.answer("Error")
         return
 
-    response = ai.parse(player_input, game.get_targets(), game.get_items())
-    actions = pr.preprocess(response)
-    res = game.act(actions)
-    response = ai.summery(player_input, res)
+    #response = ai.parse(player_input, game.get_targets(), game.get_items())
+    #actions = pr.preprocess(response)
+    #res = game.act(actions)
+    #response = ai.summery(player_input, res)
+#
+    #await message.answer(res)
+    #await message.answer(response)
+    #await message.answer(str(game.fight_info()))
 
-    await message.answer(response)
-    await message.answer(str(game.character))
+    response = ai.test(last_response, player_input, "laboratory", [("lazer_gun", 1), ("first_aid_kit", 1)], ["tiredness"], 100, 10, 10)
+    print(response)
 
 
 if __name__ == '__main__':

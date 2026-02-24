@@ -1,0 +1,23 @@
+[
+    {
+        "name": "light",
+        "damage_mul": 0.5,
+        "strength_mul": 0.75,
+        "intellect_mul": 1.25,
+        "effect_chance": 0.5
+    },
+    {
+        "name": "normal",
+        "damage_mul": 1,
+        "strength_mul": 1,
+        "intellect_mul": 1,
+        "effect_chance": 1
+    },
+    {
+        "name": "heavy",
+        "damage_mul": 2,
+        "strength_mul": 1.75,
+        "intellect_mul": 0.5,
+        "effect_chance": 2
+    }
+]

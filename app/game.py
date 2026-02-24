@@ -19,22 +19,27 @@ class Game():
             targets = [self.enemy.name]
         else:
             targets = []
-        
         return targets
     
     def get_items(self) -> list[str]:
         items = [self.character.weapon]
-        
         return items
+    
+    def fight_info(self) -> str:
+        if not self.enemy:
+            return ""
+        return  f"⚔️ {self.character.name} ({self.character.hp}/{self.character.max_hp}❤️)\n"\
+                f"⚔️ {self.enemy.name} ({self.enemy.hp}/{self.enemy.max_hp}❤️)\n"\
 
     def act(self, actions: list) -> str:
         """Выполняет действия из списка"""
         Logger.info(actions)
 
+        results = ""
         for action_data in actions:
-            self.__act(action_data)
+            results += self.__act(action_data)
 
-        return str(self.character)
+        return results
 
     def next_floor(self) -> str:
         """Метод для перехода на следующий этаж"""
@@ -67,9 +72,9 @@ class Game():
         results = ""
 
         if action == "attack":
-            results += self.__process_attack(action_data, target, item)
+            results = self.__process_attack(action_data, target, item)
 
-        return ""
+        return results
 
     def __process_attack(self, action_data: dict, target, item) -> str:
         attack_attrs = action_data.get("attack_attrs", None)
@@ -110,10 +115,6 @@ class Game():
             damage *= 2
             strength_req += 3
             intellect_req -= 3
-        elif force == "deadly":
-            damage *= 4
-            strength_req += 5
-            intellect_req -= 5
         else:
             damage *= 1
             strength_req += 0
@@ -143,18 +144,29 @@ class Game():
         damage += random.randint(-2, 2)
         damage = int(damage)
 
-        agility_delta = int(agility_req / self.character.agility * 100) - 100
-        strength_delta = int(strength_req / self.character.strength * 100) - 100
-        intellect_delta = int(intellect_req / self.character.intellect * 100) - 100
-        deye = random.randint(0, 100)
+        agility_req = 1 if agility_req < 1 else agility_req
+        strength_req = 1 if strength_req < 1 else strength_req
+        intellect_req = 1 if intellect_req < 1 else intellect_req
 
-        if deye > 50 + agility_delta:
+        agility_delta = int(self.character.agility / agility_req * 100) - 100
+        strength_delta = int(self.character.strength / strength_req * 100) - 100
+        intellect_delta = int(self.character.intellect / intellect_req * 100) - 100
+        skills = [agility_delta, strength_delta, intellect_delta]
+
+        #print(f"\n{self.character.agility} / {agility_req} - 100 = {agility_delta}")
+        #print(f"\n{self.character.strength} / {strength_req} - 100 = {strength_delta}")
+        #print(f"\n{self.character.intellect} / {intellect_req} - 100 = {intellect_delta}")
+        #print(f"\nDeye = {deye}")
+
+        sucess, skill = self.__test_attack(skills)
+
+        if skill == 0 and not sucess:
             results += f"\nИгроку не хватило ловкости и {self.enemy.name} увернулся от атаки!"
-        elif deye > 50 + strength_delta:
+        elif skill == 1 and not sucess:
             self.enemy.hp -= damage // 2
             results += f"\nИгроку не хватило силы и {self.enemy.name} заблокировал удар!"
             results += f"\n{self.enemy.name} получил урон {damage // 2} вместо {damage}"
-        elif deye > 50 + intellect_delta:
+        elif skill == 2 and not sucess:
             self.character.hp -= damage // 2
             results += f"\nИгроку не хватило интеллекта и {self.enemy.name} парировал атаку!"
             results += f"\nИгрок получил урон {damage // 2}"
@@ -163,5 +175,54 @@ class Game():
             results += f"\nИгроку нанес успешную атаку по {self.enemy.name}!"
             results += f"\n{self.enemy.name} получил урон {damage}"
 
+        if self.enemy.hp <= 0:
+            results += f"\n{self.enemy.name} погиб!"
+            return results
+
+        results += f"\n{self.enemy.name} готовиться атаковать!"
+
+        damage = 7
+        agility_req = self.character.agility
+        strength_req = self.character.strength
+        intellect_req = self.character.intellect
+
+        damage += random.randint(-2, 2)
+        damage = int(damage)
+
+        agility_req = 1 if agility_req < 1 else agility_req
+        strength_req = 1 if strength_req < 1 else strength_req
+        intellect_req = 1 if intellect_req < 1 else intellect_req
+
+        agility_delta = int(self.enemy.agility / agility_req * 100) - 100
+        strength_delta = int(self.enemy.strength / strength_req * 100) - 100
+        intellect_delta = int(self.enemy.intellect / intellect_req * 100) - 100
+        skills = [agility_delta, strength_delta, intellect_delta]
+
+        sucess, skill = self.__test_attack(skills)
+
+        if skill == 0 and not sucess:
+            results += f"\n{self.enemy.name} не хватило ловкости и игрок увернулся от атаки!"
+        elif skill == 1 and not sucess:
+            self.character.hp -= damage // 2
+            results += f"\n{self.enemy.name} не хватило силы и игрок заблокировал удар!"
+            results += f"\nИгрок получил урон {damage // 2} вместо {damage}"
+        elif skill == 2 and not sucess:
+            self.enemy.hp -= damage // 2
+            results += f"\n{self.enemy.name} не хватило интеллекта и игрок парировал атаку!"
+            results += f"\n{self.enemy.name} получил урон {damage // 2}"
+        else:
+            self.character.hp -= damage
+            results += f"\n{self.enemy.name} нанес успешную атаку по игроку!"
+            results += f"\nИгрок получил урон {damage}"
+
+        if self.enemy.hp <= 0:
+            results += f"\n{self.enemy.name} погиб!"
+            return results
+
         return results
-            
+
+    def __test_attack(self, skills: list) -> tuple[bool, int]:
+        skill = skills.index(min(skills))
+        deye = random.randint(0, 100)
+
+        return deye < 50 + skills[skill], skill
