@@ -1,0 +1,5 @@
+{
+    "tavern": {
+        "actions": ["look_around", "order_food", "rent_room", "play", "take_quest", "talk"]
+    }
+}

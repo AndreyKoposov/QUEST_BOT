@@ -29,29 +29,30 @@ ai = AI(AUTH)
 game = Game()
 pr = Preprocessor()
 
-last_response = ""
+current_options = list[str]()
 
-def get_main_menu() -> ReplyKeyboardMarkup:
+def create_menu(options: list[str]) -> ReplyKeyboardMarkup:
     """Создает меню"""
+    buttons = [[KeyboardButton(text=op)] for op in options]
     keyboard = ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="Атака")],
-            [KeyboardButton(text="Защита")],
-        ],
+        keyboard=buttons,
         resize_keyboard=True,
-        input_field_placeholder="Ваш ход"
+        input_field_placeholder="Ваши действия..."
     )
     return keyboard
 
 @dp.message(Command('start'))
 async def cmd_start(message: Message):
     """Точка входа"""
-    await message.reply("Привет, это РПГ игра с участием ИИ.", reply_markup=get_main_menu())
-    res = game.next_floor()
-    await message.reply(res)
+    game.start()
+
+    options = game.get_menu()
+    keyboard = create_menu(options)
+    await message.reply("Привет, это РПГ игра с участием ИИ.", reply_markup=keyboard)
+    await message.reply(f"\nТекущая локация: {game.location.name}\n{game.location.desc}")
 
 @router.message(F.text)
-async def custom_action(message: Message):
+async def input_handler(message: Message):
     """Обработчик сообщения от пользователя"""
     if message.text:
         player_input = message.text.strip()[:150]
@@ -59,17 +60,24 @@ async def custom_action(message: Message):
         await message.answer("Error")
         return
 
-    #response = ai.parse(player_input, game.get_targets(), game.get_items())
-    #actions = pr.preprocess(response)
-    #res = game.act(actions)
+    if player_input in game.get_menu():
+        res = game.do_option(player_input)
+    else:
+        response = ai.parse_action(player_input, game.location)
+        action = pr.preprocess(response)[0]["action"]
+        res = game.do_action(action)
+
+    await message.answer(res)
+
+    if game.new_loc:
+        options = game.get_menu()
+        keyboard = create_menu(options)
+        await message.reply(f"\nТекущая локация: {game.location.name}\n{game.location.desc}", reply_markup=keyboard)
     #response = ai.summery(player_input, res)
 #
     #await message.answer(res)
     #await message.answer(response)
     #await message.answer(str(game.fight_info()))
-
-    response = ai.test(last_response, player_input, "laboratory", [("lazer_gun", 1), ("first_aid_kit", 1)], ["tiredness"], 100, 10, 10)
-    print(response)
 
 
 if __name__ == '__main__':

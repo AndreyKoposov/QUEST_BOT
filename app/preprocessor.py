@@ -11,6 +11,7 @@ class Preprocessor():
         """Обрабатывает ответ от ИИ"""
         res = self.__select_json(raw_response)
         res = self.__remove_bad_chars(res)
+        res = self.__remove_whitespaces(res)
         res = self.__try_parse(res)
 
         return res
@@ -26,6 +27,9 @@ class Preprocessor():
             text = text.replace(bad_char, '"')
 
         return text
+
+    def __remove_whitespaces(self, text: str) -> str:
+        return "".join(text.split())
 
     def __try_parse(self, text: str) -> list:
         actions = []

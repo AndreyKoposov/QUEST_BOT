@@ -1,11 +1,12 @@
 """langchain_gigachat, langchain_core"""
 from langchain_gigachat import GigaChat
 from logger import Logger
+from location import Location
 
 
 class AI():
     """Класс для работы с gigachat api"""
-    def __init__(self, auth: str, temp: float = 0.5):
+    def __init__(self, auth: str, temp: float = 0.0):
         self.giga = GigaChat(
             credentials=auth,
             model="GigaChat",
@@ -14,6 +15,37 @@ class AI():
             scope="GIGACHAT_API_PERS",
             timeout=15
         )
+
+    def parse_action(self, player_input: str, location: Location):
+        """Парсит ввод от пользователя"""
+        query = """
+        ## Задача
+        Ты — переводчик команд игрока в JSON для текстовой фэнтэзи RPG.
+        Игрок написал: """ + player_input + """.
+        Локация: """ + location.name + """.
+        Доступные действия: """ + ', '.join([str(act) for act in location.actions]) + """.
+
+        ## Формат ответа
+        Проанализируй текст и верни только строго валидный JSON по этой схеме:
+        [
+            {
+                "action": "(одно из действий)"
+            }
+        ]
+
+        ## Правила:
+        - Не придумывай цели, которых нет в списке.
+        - Ответ должен содержать ТОЛЬКО JSON, без пояснений.
+        """
+
+        res = self.giga.invoke(query).content
+
+        if isinstance(res, str):
+            Logger.info(f"AI response:\n{res}")
+            return res
+
+        Logger.error(f"Bad AI answer:\n{res}")
+        return ""
 
     def parse(self, player_input: str, targets: list[str], items: list[str]):
         """Парсит ввод от пользователя"""
@@ -86,60 +118,3 @@ class AI():
         """
 
         return str(self.giga.invoke(query).content)
-
-    def test(self, prev_msg: str, player_input: str, location: str, items: list[tuple[str, int]], effects: list[str], hp: int, money: int, cartridges: int):
-        """Парсит ввод от пользователя"""
-        query = """
-        ## Задача
-        Ты — анализатор ввода игрока в JSON для текстовой sci-fi RPG.
-        Твоя задача - проанализировать текст, и вернуть JSON, описывающий результат действия игрока.
-
-        Контекст: """ + prev_msg + """.
-        Игрок ответил: """ + player_input + """.
-        Текущая локация: """ + location + """.
-        Текущее здоровье игрока: """ + str(hp) + """ из 100.
-        Денег у игрока: """ + str(money) + """.
-        Патрон у игрока: """ + str(cartridges) + """.
-        Эффекты на игроке: """ + ', '.join([str(e) for e in effects]) + """.
-        Предметы у игрока: """ + ', '.join([f"{i}({c})" for i, c in items]) + """.
-
-        ## Формат ответа
-        Проанализируй текст и верни строго валидный JSON по этой схеме:
-        {
-            "feasible": true/false
-            "important_skill": (strength/agility/intellect/none),
-            "difficult": (easy/normal/hard/none)
-            "items": [
-                {
-                    "item_name": (название предмета),
-                    "count": 0,
-                    "type": (add/remove/use)
-                },
-            ],
-            "effects": [
-                {
-                    "effect_name": (название эффекта),
-                    "type": (add/remove/use)
-                },
-            ],
-            "location": (имя локации)
-            "health_change": 0,
-            "money_change": 0,
-            "cartridges_change": 0
-        }
-
-        ## Правила:
-        - Если игрок использует предмет, которого у него нет, или делает иное невыполнимое действие - укажи feasible = false.
-        - Укажи какой навык необходим для выполнения действия игрока и сложность исполняемого действия. Если действие обычное или простое - укажи none.
-        - Ответ должен содержать ТОЛЬКО JSON, без пояснений.
-        - Если игрок не использует предметов - укажи пустой список.
-        """
-
-        res = self.giga.invoke(query).content
-
-        if isinstance(res, str):
-            Logger.info(f"AI response:\n{res}")
-            return res
-
-        Logger.error(f"Bad AI answer:\n{res}")
-        return ""
