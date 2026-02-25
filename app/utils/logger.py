@@ -17,7 +17,7 @@ class Logger():
             datefmt='%Y-%m-%d %H:%M:%S'
         )
         file_handler = RotatingFileHandler(
-            path + 'logs\\app.log',
+            path + 'app\\logs\\app.log',
             maxBytes=1024*1024,
             encoding='utf-8'
         )

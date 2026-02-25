@@ -6,7 +6,7 @@ class Enter(Scene):
     id = "enter"
     description = "Вы вошли в таверну, тут как всегда шумно и весело."
 
-    available_actions = []
+    available_actions = ["rent_room", "order_food", "talk", "play", "look_around"]
 
 class Dialog(Scene):
     """Сцена разговора"""

@@ -1,5 +1,5 @@
 from app.game.location import Location
-from app.game.locations.Tavern.actions import Play, LookAround
+from app.game.locations.Tavern.actions import Play, LookAround, RentRoom, OrderFood, Talk
 from app.game.locations.Tavern.scenes import Enter, Dialog
 
 
@@ -13,8 +13,14 @@ class Tavern(Location):
         Enter.id: Enter(),
         Dialog.id: Dialog(),
     }
-
     button_actions = {
-        "🎲 Играть": Play(),
-        "👀 Осмотреться": LookAround(),
+        "🎲 Играть": "play",
+        "👀 Осмотреться": "look_around",
+    }
+    ai_actions = {
+        "play": Play(),
+        "look_around": LookAround(),
+        "rent_room": RentRoom(),
+        "order_food": OrderFood(),
+        "talk": Talk()
     }

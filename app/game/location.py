@@ -13,5 +13,5 @@ class Location:
     scenes: dict[str, Scene]
 
     # Словари действий
-    button_actions: dict[str, Action]  # Действия по кнопкам
-    ai_actions: dict[str, None]   # Паттерны для ИИ
+    button_actions: dict[str, str]  # Действия по кнопкам
+    ai_actions: dict[str, Action]   # Паттерны для ИИ

@@ -15,14 +15,14 @@ class GigaAI():
             timeout=15
         )
 
-    def parse_action(self, player_input: str, location):
+    def parse_action(self, player_input: str, location_name: str, available_actions: list[str]):
         """Парсит ввод от пользователя"""
         query = """
         ## Задача
         Ты — переводчик команд игрока в JSON для текстовой фэнтэзи RPG.
         Игрок написал: """ + player_input + """.
-        Локация: """ + location.name + """.
-        Доступные действия: """ + ', '.join([str(act) for act in location.actions]) + """.
+        Локация: """ + location_name + """.
+        Доступные действия: """ + ', '.join([str(act) for act in available_actions]) + """.
 
         ## Формат ответа
         Проанализируй текст и верни только строго валидный JSON по этой схеме:
@@ -46,44 +46,19 @@ class GigaAI():
         Logger.error(f"Bad AI answer:\n{res}")
         return ""
 
-    def parse(self, player_input: str, targets: list[str], items: list[str]):
+    def parse(self, player_input: str, pattern: str, location_name: str, npcs: list[str]):
         """Парсит ввод от пользователя"""
         query = """
         ## Задача
-        Ты — переводчик команд игрока в JSON для текстовой RPG.
+        Ты — переводчик команд игрока в JSON для текстовой фэнтэзи RPG.
         Игрок написал: """ + player_input + """.
-
-        Доступные действия: attack, defend, move, talk, wait, explore, item_use, item_drop.
-        Доступные цели: """ + ', '.join([str(t) for t in targets]) + """.
-        Доступные предметы: """ + ', '.join([str(i) for i in items]) + """.
+        Локация: """ + location_name + """.
+        Доступные персонажи: """ + ', '.join([str(npc) for npc in npcs]) + """.
 
         ## Формат ответа
         Проанализируй текст и верни строго валидный JSON по этой схеме:
         [
-            {
-                "action": (одно из действий),
-                "target": (имя цели),
-                "item_used": (имя предмета),
-                "attack_attrs": {
-                    "force": (light/normal/heavy),
-                    "aimed_to": (legs/hands/body/head/eyes/back),
-                },
-                "move_attrs": {
-                    "speed": (slow/normal/fast),
-                    "stealth": (true/false),
-                },
-                "defend_attrs": {
-                    "type": (block/evasion/parry),
-                },
-                "talk_attrs": {
-                    "type": (friendly/aggressive/neutral),
-                    "topic": (тема разговора),
-                },
-                "wait_attrs": {
-                    "time": (время в минутах),
-                    "type": (rest/sleep/default),
-                },
-            },
+            """ + pattern + """
         ]
 
         ## Правила:
@@ -92,7 +67,7 @@ class GigaAI():
         - Не придумывай цели, действия и предметы, которых нет в списке. Если игрок сказал "меч", а в списке sword — используй sword.
         - Ответ должен содержать ТОЛЬКО JSON, без пояснений.
         """
-
+        print(query)
         res = self.giga.invoke(query).content
 
         if isinstance(res, str):
