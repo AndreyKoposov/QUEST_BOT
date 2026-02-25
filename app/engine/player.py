@@ -1,4 +1,5 @@
-class Character():
+class Player():
+    """Класс персонажа"""
     def __init__(self) -> None:
         self.name = "Andrey"
         self.hp = 30

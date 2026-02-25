@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 
 
 class Logger():
-    """Класс, отвечающий за логгирование"""
+    """Класс для логгирование"""
     logger = getLogger(__name__)
 
     @staticmethod

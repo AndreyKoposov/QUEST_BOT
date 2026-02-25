@@ -1,10 +1,9 @@
 """langchain_gigachat, langchain_core"""
 from langchain_gigachat import GigaChat
-from logger import Logger
-from location import Location
+from app.utils.logger import Logger
 
 
-class AI():
+class GigaAI():
     """Класс для работы с gigachat api"""
     def __init__(self, auth: str, temp: float = 0.0):
         self.giga = GigaChat(
@@ -16,7 +15,7 @@ class AI():
             timeout=15
         )
 
-    def parse_action(self, player_input: str, location: Location):
+    def parse_action(self, player_input: str, location):
         """Парсит ввод от пользователя"""
         query = """
         ## Задача
@@ -102,7 +101,6 @@ class AI():
 
         Logger.error(f"Bad AI answer:\n{res}")
         return ""
-
 
     def summery(self, player_input, results) -> str:
         """Подводит итог действиям игрока и их результатам"""
