@@ -17,7 +17,7 @@ TOKEN = str(getenv('BOT_TOKEN'))
 AUTH = str(getenv('AI_AUTH'))
 
 # Вспомогательные классы
-GIGA = GigaAI(AUTH)
+ai = GigaAI(AUTH)
 Logger.start(ROOT)
 
 # Настройка бота
@@ -26,22 +26,15 @@ dp = Dispatcher()
 router = Router()
 dp.include_router(router)
 
-   
+
 player = Player()
-session = GameSession(player, GIGA)
+session = GameSession(player, ai)
 
 @dp.message(Command('start'))
 async def cmd_start(message: Message):
     """Точка входа"""
     await message.reply("Привет! Это текстовая RPG игра с участием ИИ.")
-    reply = session.start()
-
-    for mes in reply:
-        menu = None
-        if mes[1]:
-            options = mes[1]
-            menu = create_menu(options)
-        await message.reply(mes[0], reply_markup=menu)
+    await reply(message, session.start())
 
 @router.message(F.text)
 async def input_handler(message: Message):
@@ -49,14 +42,16 @@ async def input_handler(message: Message):
     if message.text is None:
         return
 
-    reply = session.process_input(message.text)
+    await reply(message, session.process_input(message.text))
 
-    for mes in reply:
+async def reply(message: Message, answers: list[tuple[str, list[str] | None]]):
+    """Отправляет пользователю все сообщения от игры"""
+    for ans in answers:
         menu = None
-        if mes[1]:
-            options = mes[1]
-            menu = create_menu(options)
-        await message.reply(mes[0], reply_markup=menu)
+        if ans[1]:
+            menu = create_menu(ans[1])
+
+        await message.reply(ans[0], reply_markup=menu)
 
 def create_menu(options: list[str]) -> ReplyKeyboardMarkup:
     """Создает меню"""
@@ -67,6 +62,7 @@ def create_menu(options: list[str]) -> ReplyKeyboardMarkup:
         input_field_placeholder="Ваши действия..."
     )
     return keyboard
+
 
 if __name__ == '__main__':
     dp.run_polling(bot)

@@ -49,7 +49,7 @@ class GigaAI():
         Logger.error(f"Bad AI answer:\n{res}")
         return ""
 
-    def parse(self, player_input: str, pattern: AiPattern, loc: Location, sc: Scene):
+    def parse_params(self, player_input: str, pattern: AiPattern, loc: Location, sc: Scene):
         """Парсит ввод от пользователя"""
         query = \
 """

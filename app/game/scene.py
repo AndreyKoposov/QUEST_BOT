@@ -3,8 +3,10 @@ class Scene:
     id: str
     description: str
 
-    # Какие действия доступны в этой сцене
     available_actions: list[str]
-
-    # Данные сцены (кто NPC, какой предмет и т.д.)
+    button_actions: dict[str, str]
     context: dict
+
+    def get_buttons(self) -> list[str]:
+        """Возвращает список кнопок"""
+        return list(self.button_actions.keys())

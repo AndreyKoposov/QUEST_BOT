@@ -13,15 +13,12 @@ class Tavern(Location):
         Enter.id: Enter(),
         Dialog.id: Dialog(),
     }
-    button_actions = {
-        "🎲 Играть": "play",
-        "👀 Осмотреться": "look_around",
-    }
-    ai_actions = {
-        "play": Play(),
-        "look_around": LookAround(),
-        "rent_room": RentRoom(),
-        "order_food": OrderFood(),
-        "talk": Talk()
+    start_scene = Enter.id
+    actions = {
+        Play.id: Play(),
+        LookAround.id: LookAround(),
+        RentRoom.id: RentRoom(),
+        OrderFood.id: OrderFood(),
+        Talk.id: Talk()
     }
     npcs = ["Elsa", "Bard"]
