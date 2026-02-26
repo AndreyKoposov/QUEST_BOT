@@ -16,22 +16,32 @@ class OrderFood(Action):
         required_context=["npcs"]
     )
 
-    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
         food_type = params.get("food_type", "meat")
         with_npc = params.get("with_npc", None)
 
         player.money -= 5
         story = list[str]()
+        text = ""
 
         if food_type == "meat":
             player.strength += 1
+
             story.append("\nПерекусив, игрок повышает свою силу!")
+            text = "Отведав сочного стейка вы чувствуете, как вас наполняют силыю"\
+                    "+1 Силы на 1 час"
         elif food_type == "soup":
             player.intellect += 1
+
             story.append("\nПерекусив, игрок повышает свой интеллект!")
+            text = "Горячий суп успокаивает вас, вы приходите в чувствою"\
+                   "+1 Интеллекта на 1 час"
         elif food_type == "dessert":
             player.agility += 1
+
             story.append("\nПерекусив, игрок повышает свою ловкость!")
+            text = "Насладившись сладостями, вы чувствуете себя намного активнее."\
+                   "+1 Ловоксти на 1 час"
         else:
             player.money += 5
             story.append("\nВ таверне не подают то, что заказал игрок.")
@@ -39,9 +49,9 @@ class OrderFood(Action):
         if with_npc:
             story.append(f"\nПока игрок ел, он общался с {with_npc}.")
 
-        text = "Вы поели"
-
-        return ActionResult(text, story)
+        if ai:
+            return ActionResult(story=story)
+        return ActionResult(text=text)
 
 class RentRoom(Action):
     """Действие снятия комнаты"""
@@ -54,7 +64,7 @@ class RentRoom(Action):
         required_context=[]
     )
 
-    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
         hourse = params.get("hourse", 1)
 
         story = list[str]()
@@ -83,7 +93,7 @@ class Talk(Action):
         required_context=["npcs"]
     )
 
-    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
         with_npc = params.get("with_npc", None)
         topic = params.get("topic", None)
         dialog_type = params.get("dialog_type", "normal")
@@ -104,7 +114,7 @@ class Play(Action):
         required_context=["npcs"]
     )
 
-    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
         with_npc = params.get("with_npc", None)
         game_name = params.get("game_name", None)
 
@@ -119,7 +129,7 @@ class LookAround(Action):
     name = "Осмотреться"
     pattern = pattern = AiPattern(name, params={}, required_context=[])
 
-    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
         story = list[str]()
         text = "Вы осмотрелись"
 

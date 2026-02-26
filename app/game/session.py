@@ -30,8 +30,10 @@ class GameSession:
 
         if text in self.current_scene.get_buttons():
             action, params = self.get_button_action(text), {}
+            ai = False
         else:
             action, params = self.extract_action(text)
+            ai = True
 
         if action is None:
             reply.append(("Unknown action", None))
@@ -40,13 +42,13 @@ class GameSession:
         result = action.execute(self.player,
                                 self.current_location,
                                 self.current_scene,
-                                params)
+                                params, ai)
 
         if result.text:
             reply.append((result.text, None))
         if result.story:
-            for entry in result.story:
-                reply.append((entry, None))
+            summery = self.get_summery(text, result.story)
+            reply.append((summery, None))
         if result.new_location_id:
             pass
         if result.new_scene_id:
@@ -85,3 +87,12 @@ class GameSession:
         if action_id in self.current_scene.available_actions:
             return self.current_location.actions[action_id]
         return None
+
+    def get_summery(self, text: str, story: list[str]) -> str:
+        """Возвращает ответ ИИ на действие игрока"""
+        context = text
+        context += "\n" + self.current_location.name
+        for entry in story:
+            context += "\n" + entry
+
+        return self.__ai.summery(text, context)

@@ -8,6 +8,6 @@ class Action:
     name: str
     pattern: AiPattern
 
-    def execute(self, player, location, scene, params: dict) -> ActionResult:
+    def execute(self, player, location, scene, params: dict, ai: bool = False) -> ActionResult:
         """Исполнение действия"""
         return ActionResult()

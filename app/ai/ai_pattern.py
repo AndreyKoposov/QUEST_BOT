@@ -1,8 +1,5 @@
-from app.game.scene import Scene
-
-
 class AiPattern():
-
+    """Класс для формирования шаблона JSON для ИИ"""
     def __init__(self, action: str, params: dict[str, str], required_context: list[str]) -> None:
         self.action: str = action
         self.params: dict[str, str] = params
@@ -16,7 +13,7 @@ class AiPattern():
 
         return json_template
 
-    def get_context(self, loc, sc) -> str:
+    def get_context(self, loc, _) -> str:
         """Возвращает строку со всей инофрмацией для ИИ"""
         context_str = f"Игрок хочет: {self.action}"
         context_str += f"\nЛокация: {loc.name}"
