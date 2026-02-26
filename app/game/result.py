@@ -1,13 +1,14 @@
 class ActionResult():
     """Результат выполнения действия"""
-    def __init__(self, text: str | None = None,
-                 story: list[str] | None = None,
+    def __init__(self,
+                 messages: list[str],
+                 story: list[str],
                  new_location_id: str | None = None,
                  save_location: bool = False,
                  new_scene_id: str | None = None,
                  scene_context: dict | None = None,) -> None:
 
-        self.text = text
+        self.messages = messages
         self.story = story
         self.new_location_id = new_location_id
         self.save_location = save_location

@@ -17,32 +17,32 @@ class OrderFood(Action):
         required_context=["npcs"]
     )
 
-    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         food_type = params.get("food_type", "meat")
         with_npc = params.get("with_npc", None)
 
         player.money -= 5
         story = list[str]()
-        text = ""
+        messages = list[str]()
 
         if food_type == "meat":
             player.strength += 1
 
             story.append("\nПерекусив, игрок повышает свою силу!")
-            text = "Отведав сочного стейка вы чувствуете, как вас наполняют силыю"\
-                    "+1 Силы на 1 час"
+            messages.append("Отведав сочного стейка вы чувствуете, как вас наполняют силыю"\
+                        "\n+1 Силы на 1 час")
         elif food_type == "soup":
             player.intellect += 1
 
             story.append("\nПерекусив, игрок повышает свой интеллект!")
-            text = "Горячий суп успокаивает вас, вы приходите в чувствою"\
-                   "+1 Интеллекта на 1 час"
+            messages.append("Горячий суп успокаивает вас, вы приходите в чувствою"\
+                        "\n+1 Интеллекта на 1 час")
         elif food_type == "dessert":
             player.agility += 1
 
             story.append("\nПерекусив, игрок повышает свою ловкость!")
-            text = "Насладившись сладостями, вы чувствуете себя намного активнее."\
-                   "+1 Ловоксти на 1 час"
+            messages.append("Насладившись сладостями, вы чувствуете себя намного активнее."\
+                        "\n+1 Ловоксти на 1 час")
         else:
             player.money += 5
             story.append("\nВ таверне не подают то, что заказал игрок.")
@@ -50,9 +50,7 @@ class OrderFood(Action):
         if with_npc:
             story.append(f"\nПока игрок ел, он общался с {with_npc}.")
 
-        if ai:
-            return ActionResult(story=story)
-        return ActionResult(text=text)
+        return ActionResult(messages, story)
 
 class RentRoom(Action):
     """Действие снятия комнаты"""
@@ -65,24 +63,22 @@ class RentRoom(Action):
         required_context=[]
     )
 
-    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         hourse = params.get("hourse", 1)
 
         story = list[str]()
-        text = ""
+        messages = list[str]()
 
         if 1 <= hourse <= 24:
             player.money -= 2 * hourse
             player.fatigue += hourse
 
             story.append("\nИгрок поспал и восстановил свои силы!")
-            text = "Поспав, чилы вернулись к вам, а здоровье полностью восстановлено"
+            messages.append("Поспав, чилы вернулись к вам, а здоровье полностью восстановлено")
         else:
             story.append("\nСнимать комнату монжо только по часам, а не по суткам и минутам!")
 
-        if ai:
-            return ActionResult(story=story)
-        return ActionResult(text=text)
+        return ActionResult(messages, story)
 
 class Talk(Action):
     """Действие разговора"""
@@ -97,14 +93,15 @@ class Talk(Action):
         required_context=["npcs"]
     )
 
-    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         with_npc = params.get("with_npc", None)
         topic = params.get("topic", None)
         dialog_type = params.get("dialog_type", "normal")
 
         story = list[str]()
+        messages = list[str]()
 
-        return ActionResult(story=story, new_scene_id="dialog", scene_context=params)
+        return ActionResult(messages, story, new_scene_id="dialog", scene_context=params)
 
 class Play(Action):
     """Действие игры"""
@@ -118,14 +115,14 @@ class Play(Action):
         required_context=["npcs"]
     )
 
-    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         with_npc = params.get("with_npc", None)
         game_name = params.get("game_name", None)
 
         story = list[str]()
-        text = "Вы решили поиграть"
+        messages = list[str]()
 
-        return ActionResult(text, story, new_scene_id="cards", scene_context=params)
+        return ActionResult(messages, story, new_scene_id="cards", scene_context=params)
 
 class LookAround(Action):
     """Осмотреться"""
@@ -133,15 +130,14 @@ class LookAround(Action):
     name = "Осмотреться"
     pattern = AiPattern(name, params={}, required_context=[])
 
-    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         story = list[str]()
+        messages = list[str]()
 
         story.append("Игрок осмотрелся и заметил дерущихся пьяниц!")
-        text = "Вы осмотрелись"
+        messages.append("Вы осмотрелись")
 
-        if ai:
-            return ActionResult(story=story)
-        return ActionResult(text=text)
+        return ActionResult(messages, story)
 
 class LeaveCardGame(Action):
     """Покинуть игру в карты"""
@@ -149,15 +145,14 @@ class LeaveCardGame(Action):
     name = "Покинуть игру в карты"
     pattern = AiPattern(name, params={}, required_context=[])
 
-    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         story = list[str]()
+        messages = list[str]()
 
         story.append("Игрок отказался играть в карты")
-        text = "Вы решили, что сегодня вам не до игр."
+        messages.append("Вы решили, что сегодня вам не до игр.")
 
-        if ai:
-            return ActionResult(story=story, new_scene_id="enter")
-        return ActionResult(text=text, new_scene_id="enter")
+        return ActionResult(messages, story, new_scene_id="enter")
 
 class StartCardGame(Action):
     """Начать игру в карты"""
@@ -169,13 +164,15 @@ class StartCardGame(Action):
         },
         required_context=[])
 
-    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         story = list[str]()
+        messages = list[str]()
 
         scene.button_actions = {
             "🃏 Еще": OneMoreCard.id,
             "❌ Пас": ImOut.id,
         }
+        scene.ai_actions = [OneMoreCard.id, ImOut.id]
 
         bet = params.get("bet", None)
         player_score = randint(1, 11)
@@ -184,15 +181,13 @@ class StartCardGame(Action):
         story.append(f"Игра началась, ставка = {bet}")
         story.append(f"Игрок взял карту номиналом {player_score}")
 
-        text = f"Игра началась, ваша карта {player_score}"
+        messages.append(f"Игра началась, ваша карта {player_score}")
 
         scene.context["bet"] = bet
         scene.context["player_score"] = player_score
         scene.context["enemy_score"] = enemy_score
 
-        if ai:
-            return ActionResult(story=story)
-        return ActionResult(text=text)
+        return ActionResult(messages, story)
 
 class OneMoreCard(Action):
     """Взять еще карту"""
@@ -200,8 +195,9 @@ class OneMoreCard(Action):
     name = "Взять еще карту"
     pattern = AiPattern(name, params={}, required_context=[])
 
-    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         story = list[str]()
+        messages = list[str]()
 
         npc = scene.context.get("with_npc", None)
         player_score = scene.context.get("player_score")
@@ -210,7 +206,7 @@ class OneMoreCard(Action):
 
         new_card = randint(1, 11)
         story.append(f"Игрок вытащил карту номинала {new_card}")
-        text = f"Номинал вытянутой карты сосавляет {new_card}"
+        messages.append(f"Номинал вытянутой карты сосавляет {new_card}")
         player_score += new_card
 
         enemy_turn = randint(1, 21)
@@ -219,32 +215,28 @@ class OneMoreCard(Action):
         else:
             new_card = randint(1, 11)
             story.append(f"Оппонент {npc} решил взять еще карту")
-            text = "Возьму еще"
+            messages.append("Возьму еще")
             enemy_score += new_card
 
-        scene_id = None
+        scene_id = "cards"
 
         if enemy_score > 21 and player_score > 21:
             story.append("У обоих игроков больше 21 очков. Ничья!")
-            text = f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nНичья!"
-            scene_id = "cards"
+            messages.append(f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nНичья!")
         elif enemy_score > 21:
             story.append("Оппонент проиграл. Игрок победил!")
-            text = f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nПобеда!\nПолучено денег {bet}"
+            messages.append(f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nПобеда!\nПолучено денег {bet}")
             #player.money += bet
-            scene_id = "cards"
         elif player_score > 21:
             story.append("Игрок проиграл. Оппонент победил!")
-            text = f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nПроигрыш!\nПотеряно денег {bet}"
+            messages.append(f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nПроигрыш!\nПотеряно денег {bet}")
             #player.money -= bet
-            scene_id = "cards"
         else:
             scene.context["player_score"] = player_score
             scene.context["enemy_score"] = enemy_score
+            scene_id = None
 
-        if ai:
-            return ActionResult(story=story, new_scene_id=scene_id)
-        return ActionResult(text=text, new_scene_id=scene_id)
+        return ActionResult(messages, story, new_scene_id=scene_id)
 
 class ImOut(Action):
     """Не брать карту"""
@@ -252,8 +244,9 @@ class ImOut(Action):
     name = "Не брать карту"
     pattern = AiPattern(name, params={}, required_context=[])
 
-    def execute(self, player: Player, location, scene, params: dict, ai: bool = False) -> ActionResult:
+    def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         story = list[str]()
+        messages = list[str]()
 
         npc = scene.context.get("with_npc", None)
         player_score = scene.context.get("player_score")
@@ -261,38 +254,34 @@ class ImOut(Action):
         bet = scene.context.get("bet", 0)
 
         story.append("Игрок решил не тянуть карту")
-        text = "Вы не стали брать карту"
+        messages.append("Вы не стали брать карту")
 
         enemy_turn = randint(1, 21)
         if enemy_score < enemy_turn < 21:
             story.append(f"Оппонент {npc} решил не тянуть новую карту")
-            text = "Я пас"
+            messages.append("Я пас")
         else:
             new_card = randint(1, 11)
             story.append(f"Оппонент {npc} решил взять еще карту")
-            text = "Возьму еще"
+            messages.append("Возьму еще")
             enemy_score += new_card
 
-        scene_id = None
+        scene_id = "cards"
 
         if enemy_score > 21 and player_score > 21:
             story.append("У обоих игроков больше 21 очков. Ничья!")
-            text = f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nНичья!"
-            scene_id = "cards"
+            messages.append(f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nНичья!")
         elif enemy_score > 21:
             story.append("Оппонент проиграл. Игрок победил!")
-            text = f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nПобеда!\nПолучено денег {bet}"
+            messages.append(f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nПобеда!\nПолучено денег {bet}")
             #player.money += bet
-            scene_id = "cards"
         elif player_score > 21:
             story.append("Игрок проиграл. Оппонент победил!")
-            text = f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nПроигрыш!\nПотеряно денег {bet}"
+            messages.append(f"Ваш счёт: {player_score}\nСчёт оппонента: {enemy_score}\nПроигрыш!\nПотеряно денег {bet}")
             #player.money -= bet
-            scene_id = "cards"
         else:
             scene.context["player_score"] = player_score
             scene.context["enemy_score"] = enemy_score
+            scene_id = None
 
-        if ai:
-            return ActionResult(story=story, new_scene_id=scene_id)
-        return ActionResult(text=text, new_scene_id=scene_id)
+        return ActionResult(messages, story, new_scene_id=scene_id)

@@ -16,47 +16,40 @@ class GameSession:
         self.__pr = Preprocessor()
         self.__ai = ai
 
-    def start(self) -> list[tuple[str, list[str] | None]]:
+    def start(self) -> tuple[list[str], list[str]]:
         """Старт игровой сессии"""
         self.current_location = Tavern()
         self.current_scene = self.current_location.get_start_scene()
 
-        return [(self.current_location.description,
-                 self.current_scene.get_buttons())]
+        return [self.current_location.description], self.current_scene.get_buttons()
 
-    def process_input(self, text: str) -> list[tuple[str, list[str] | None]]:
+    def process_input(self, text: str) -> tuple[list[str], list[str]]:
         """Обработка ввода"""
-        reply = []
-
         if text in self.current_scene.get_buttons():
             action, params = self.__get_button_action(text), {}
-            ai = False
+            ai_mode = False
         else:
             action, params = self.__extract_action(text)
-            ai = True
+            ai_mode = True
 
         if action is None:
-            reply.append(("Unknown action", None))
-            return reply
+            return ["Unknown action"], self.current_scene.get_buttons()
 
         result = action.execute(self.player,
                                 self.current_location,
                                 self.current_scene,
-                                params, ai)
+                                params)
 
-        if result.text:
-            reply.append((result.text, self.current_scene.get_buttons()))
-        if result.story:
+        if ai_mode:
             summery = self.__get_summery(text, result.story)
-            reply.append((summery, self.current_scene.get_buttons()))
+            result.messages.append(summery)
         if result.new_location_id:
             pass
         if result.new_scene_id:
             self.change_scene(result.new_scene_id, result.scene_context)
-            reply.append((self.current_scene.description,
-                          self.current_scene.get_buttons()))
+            result.messages.append(self.current_scene.description)
 
-        return reply
+        return result.messages, self.current_scene.get_buttons()
 
     def __get_button_action(self, text: str) -> Action | None:
         """Если нажата кнопка"""

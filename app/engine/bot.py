@@ -44,14 +44,12 @@ async def input_handler(message: Message):
 
     await reply(message, session.process_input(message.text))
 
-async def reply(message: Message, answers: list[tuple[str, list[str] | None]]):
+async def reply(message: Message, answer: tuple[list[str], list[str]]):
     """Отправляет пользователю все сообщения от игры"""
-    for ans in answers:
-        menu = None
-        if ans[1]:
-            menu = create_menu(ans[1])
-
-        await message.reply(ans[0], reply_markup=menu)
+    messages, buttons = answer
+    menu = create_menu(buttons)
+    for mes in messages:
+        await message.reply(mes, reply_markup=menu)
 
 def create_menu(options: list[str]) -> ReplyKeyboardMarkup:
     """Создает меню"""

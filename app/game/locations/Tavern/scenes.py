@@ -1,5 +1,5 @@
 from app.game.scene import Scene
-from app.game.locations.Tavern.actions import RentRoom, Play, LookAround, Talk, OrderFood, LeaveCardGame, StartCardGame, OneMoreCard
+from app.game.locations.Tavern.actions import RentRoom, Play, LookAround, Talk, OrderFood, LeaveCardGame, StartCardGame
 
 
 class Enter(Scene):
@@ -29,7 +29,7 @@ class Cards(Scene):
     id = "cards"
     description = "Вы играете в карты."
 
-    ai_actions = [RentRoom.id, OrderFood.id]
+    ai_actions = [StartCardGame.id, LeaveCardGame.id]
     button_actions = {
         "🎲 Начать": StartCardGame.id,
         "❌ Уйти": LeaveCardGame.id,
