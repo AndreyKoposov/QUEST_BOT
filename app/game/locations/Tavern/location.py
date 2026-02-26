@@ -24,3 +24,4 @@ class Tavern(Location):
         "order_food": OrderFood(),
         "talk": Talk()
     }
+    npcs = ["Elsa", "Bard"]

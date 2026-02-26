@@ -28,7 +28,7 @@ dp.include_router(router)
 
    
 player = Player()
-session = GameSession(player)
+session = GameSession(player, GIGA)
 
 @dp.message(Command('start'))
 async def cmd_start(message: Message):
@@ -49,7 +49,7 @@ async def input_handler(message: Message):
     if message.text is None:
         return
 
-    reply = session.process_input(message.text, GIGA)
+    reply = session.process_input(message.text)
 
     for mes in reply:
         menu = None

@@ -1,6 +1,9 @@
 """langchain_gigachat, langchain_core"""
 from langchain_gigachat import GigaChat
+from app.game.location import Location
+from app.game.scene import Scene
 from app.utils.logger import Logger
+from app.ai.ai_pattern import AiPattern
 
 
 class GigaAI():
@@ -17,25 +20,25 @@ class GigaAI():
 
     def parse_action(self, player_input: str, location_name: str, available_actions: list[str]):
         """Парсит ввод от пользователя"""
-        query = """
-        ## Задача
-        Ты — переводчик команд игрока в JSON для текстовой фэнтэзи RPG.
-        Игрок написал: """ + player_input + """.
-        Локация: """ + location_name + """.
-        Доступные действия: """ + ', '.join([str(act) for act in available_actions]) + """.
+        query = \
+"""
+## Задача
+Ты — переводчик текста игрока в JSON для текстовой фэнтэзи RPG.
+Нужно определить по тексту какое действие хочет сделать игрок.
+Игрок написал: """ + player_input + """.
+Локация: """ + location_name + """.
+Доступные действия: """ + ', '.join([str(act) for act in available_actions]) + """.
 
-        ## Формат ответа
-        Проанализируй текст и верни только строго валидный JSON по этой схеме:
-        [
-            {
-                "action": "(одно из действий)"
-            }
-        ]
+## Формат ответа
+Проанализируй текст и верни только строго валидный JSON по этой схеме:
+{
+    "action": "(одно из действий)"
+}
 
-        ## Правила:
-        - Не придумывай цели, которых нет в списке.
-        - Ответ должен содержать ТОЛЬКО JSON, без пояснений.
-        """
+## Правила:
+- Не придумывай цели, которых нет в списке.
+- Ответ должен содержать ТОЛЬКО JSON, без пояснений.
+"""
 
         res = self.giga.invoke(query).content
 
@@ -46,27 +49,26 @@ class GigaAI():
         Logger.error(f"Bad AI answer:\n{res}")
         return ""
 
-    def parse(self, player_input: str, pattern: str, location_name: str, npcs: list[str]):
+    def parse(self, player_input: str, pattern: AiPattern, loc: Location, sc: Scene):
         """Парсит ввод от пользователя"""
-        query = """
-        ## Задача
-        Ты — переводчик команд игрока в JSON для текстовой фэнтэзи RPG.
-        Игрок написал: """ + player_input + """.
-        Локация: """ + location_name + """.
-        Доступные персонажи: """ + ', '.join([str(npc) for npc in npcs]) + """.
+        query = \
+"""
+## Задача
+Ты — анализатор текста игрока в JSON для текстовой фэнтэзи RPG.
+Нужно извлечь из текста дополнительную информацию о действии, которое хочет сделать игрок.
+Игрок написал: """ + player_input + """.
+""" + pattern.get_context(loc, sc) + """
 
-        ## Формат ответа
-        Проанализируй текст и верни строго валидный JSON по этой схеме:
-        [
-            """ + pattern + """
-        ]
-
-        ## Правила:
-        - Если игрок явно не указал параметр, пропусти его.
-        - Заполни атрибуты действия.
-        - Не придумывай цели, действия и предметы, которых нет в списке. Если игрок сказал "меч", а в списке sword — используй sword.
-        - Ответ должен содержать ТОЛЬКО JSON, без пояснений.
-        """
+## Формат ответа
+Проанализируй текст и верни строго валидный JSON по этой схеме:
+""" + str(pattern) + """
+        
+## Правила:
+- Заполни атрибуты действия.
+- Если игрок явно не указал атрибут, пропусти его.
+- Не придумывай цели, персонажей и предметы, которых нет в списке. Если игрок сказал "меч", а в списке sword — используй sword.
+- Ответ должен содержать ТОЛЬКО JSON, без пояснений.
+"""
         print(query)
         res = self.giga.invoke(query).content
 

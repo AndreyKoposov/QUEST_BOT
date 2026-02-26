@@ -1,18 +1,20 @@
 from app.game.action import Action
 from app.game.player import Player
 from app.game.action import ActionResult
+from app.ai.ai_pattern import AiPattern
 
 
 class OrderFood(Action):
     """Действие заказа еды"""
     id = "order_food"
     name = "Заказать еды"
-    pattern = """
+    pattern = AiPattern(name, params=
         {
-            "food_type": (meat/soup/dessert/other),
-            "with_npc": (имя персонажа)
-        }
-    """
+            "food_type": "(meat/soup/dessert/other)",
+            "with_npc": "(имя персонажа)"
+        },
+        required_context=["npcs"]
+    )
 
     def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         food_type = params.get("food_type", "meat")
@@ -45,11 +47,12 @@ class RentRoom(Action):
     """Действие снятия комнаты"""
     id = "rent_room"
     name = "Снять комнату"
-    pattern = """
+    pattern = AiPattern(name, params=
         {
-            "hourse": (количество часов)
-        }
-    """
+            "hours": "(количество часов)"
+        },
+        required_context=[]
+    )
 
     def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         hourse = params.get("hourse", 1)
@@ -71,13 +74,14 @@ class Talk(Action):
     """Действие снятия комнаты"""
     id = "talk"
     name = "Поговорить"
-    pattern = """
+    pattern = AiPattern(name, params=
         {
-            "topic": (тема разговора),
-            "with_npc": (имя персонажа),
-            "dialog_type": (normal/agressive/friendly)
-        }
-    """
+            "topic": "(тема разговора)",
+            "with_npc": "(имя персонажа)",
+            "dialog_type": "(normal/agressive/friendly)"
+        },
+        required_context=["npcs"]
+    )
 
     def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         with_npc = params.get("with_npc", None)
@@ -92,12 +96,13 @@ class Play(Action):
     """Действие игры"""
     id = "play"
     name = "Поиграть"
-    pattern = """
+    pattern = AiPattern(name, params=
         {
-            "game_name": (dice/cards),
-            "with_npc": (имя персонажа)
-        }
-    """
+            "game_name": "(кубики/карты)",
+            "with_npc": "(имя персонажа)"
+        },
+        required_context=["npcs"]
+    )
 
     def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         with_npc = params.get("with_npc", None)
@@ -112,7 +117,7 @@ class LookAround(Action):
     """Осмотреться"""
     id = "look_around"
     name = "Осмотреться"
-    pattern = ""
+    pattern = pattern = AiPattern(name, params={}, required_context=[])
 
     def execute(self, player: Player, location, scene, params: dict) -> ActionResult:
         story = list[str]()

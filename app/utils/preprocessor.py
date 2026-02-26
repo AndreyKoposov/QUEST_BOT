@@ -8,7 +8,7 @@ class Preprocessor():
     def __init__(self) -> None:
         self.bad_chars = ['”', '„', '“', '«', '»']
 
-    def preprocess(self, raw_response: str) -> list:
+    def preprocess(self, raw_response: str) -> dict:
         """Обрабатывает ответ от ИИ"""
         res = self.__select_json(raw_response)
         res = self.__remove_bad_chars(res)
@@ -18,8 +18,8 @@ class Preprocessor():
         return res
 
     def __select_json(self, text: str) -> str:
-        start = text.find('[')
-        end = text.find(']')
+        start = text.find('{')
+        end = text.find('}')
 
         return text[start:end+1]
 
@@ -32,8 +32,8 @@ class Preprocessor():
     def __remove_whitespaces(self, text: str) -> str:
         return "".join(text.split())
 
-    def __try_parse(self, text: str) -> list:
-        actions = []
+    def __try_parse(self, text: str) -> dict:
+        actions = {}
 
         try:
             actions = loads(text)
