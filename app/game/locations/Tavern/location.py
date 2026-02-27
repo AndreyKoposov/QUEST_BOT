@@ -1,5 +1,5 @@
 from app.game.location import Location
-from app.game.locations.Tavern.states import Enter
+from app.game.locations.Tavern.states import Enter, Play, Cards, CardsGame
 
 
 class Tavern(Location):
@@ -17,3 +17,6 @@ class Tavern(Location):
 
     def __init__(self) -> None:
         self.states.append(Enter())
+        self.states.append(Play())
+        self.states.append(Cards())
+        self.states.append(CardsGame())

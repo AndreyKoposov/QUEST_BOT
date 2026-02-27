@@ -7,7 +7,6 @@ from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from app.ai.giga import GigaAI
 from app.utils.logger import Logger
 from app.game.session import GameSession
-from app.game.player import Player
 
 
 # Переменные окружения

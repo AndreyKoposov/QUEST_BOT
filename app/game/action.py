@@ -4,8 +4,8 @@ from app.game.result import ActionResult
 
 class Action:
     """Класс действия"""
-    def __init__(self, id: str, handler: Callable, **args) -> None:
-        self.id = id
+    def __init__(self, action_id: str, handler: Callable, **args) -> None:
+        self.id = action_id
         self.handler = handler
         self.params: dict[str, str] = args.get("params", {})
         self.required: list[str] = args.get("required", [])
