@@ -27,33 +27,42 @@ router = Router()
 dp.include_router(router)
 
 
-player = Player()
-session = GameSession(player, ai)
+sessions = dict[int, GameSession]()
 
 @dp.message(Command('start'))
 async def cmd_start(message: Message):
     """Точка входа"""
+    if message.from_user is None:
+        return
+
     await message.reply("Привет! Это текстовая RPG игра с участием ИИ.")
-    await reply(message, session.start())
+    user_id = message.from_user.id
+    if user_id not in sessions:
+        sessions[user_id] = GameSession(ai)
+
+    await reply(message, sessions[user_id].start())
 
 @router.message(F.text)
 async def input_handler(message: Message):
     """Обработчик сообщения от пользователя"""
+    if message.from_user is None:
+        return
     if message.text is None:
         return
+    user_id = message.from_user.id
 
-    await reply(message, session.process_input(message.text))
+    await reply(message, sessions[user_id].process(message.text))
 
-async def reply(message: Message, answer: tuple[list[str], list[str]]):
+async def reply(message: Message, answer: tuple[list[str], list[list[str]]]):
     """Отправляет пользователю все сообщения от игры"""
     messages, buttons = answer
     menu = create_menu(buttons)
     for mes in messages:
         await message.reply(mes, reply_markup=menu)
 
-def create_menu(options: list[str]) -> ReplyKeyboardMarkup:
+def create_menu(options: list[list[str]]) -> ReplyKeyboardMarkup:
     """Создает меню"""
-    buttons = [[KeyboardButton(text=op)] for op in options]
+    buttons = [[KeyboardButton(text=btn) for btn in line] for line in options]
     keyboard = ReplyKeyboardMarkup(
         keyboard=buttons,
         resize_keyboard=True,

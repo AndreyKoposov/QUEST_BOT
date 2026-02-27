@@ -1,9 +1,8 @@
 """langchain_gigachat, langchain_core"""
 from langchain_gigachat import GigaChat
 from app.game.location import Location
-from app.game.scene import Scene
 from app.utils.logger import Logger
-from app.ai.ai_pattern import AiPattern
+from app.game.action import Action
 
 
 class GigaAI():
@@ -18,7 +17,7 @@ class GigaAI():
             timeout=15
         )
 
-    def parse_action(self, player_input: str, location_name: str, available_actions: list[str]):
+    def parse_action(self, player_input: str, location: Location):
         """Парсит ввод от пользователя"""
         query = \
 """
@@ -26,8 +25,8 @@ class GigaAI():
 Ты — переводчик текста игрока в JSON для текстовой фэнтэзи RPG.
 Нужно определить по тексту какое действие хочет сделать игрок.
 Игрок написал: """ + player_input + """.
-Локация: """ + location_name + """.
-Доступные действия: """ + ', '.join([str(act) for act in available_actions]) + """.
+Локация: """ + location.name + """.
+Доступные действия: """ + ', '.join([str(act) for act in location.available_actions()]) + """.
 
 ## Формат ответа
 Проанализируй текст и верни только строго валидный JSON по этой схеме:
@@ -49,7 +48,7 @@ class GigaAI():
         Logger.error(f"Bad AI answer:\n{res}")
         return ""
 
-    def parse_params(self, player_input: str, pattern: AiPattern, loc: Location, sc: Scene):
+    def parse_params(self, player_input: str, action: Action, loc: Location):
         """Парсит ввод от пользователя"""
         query = \
 """
@@ -57,11 +56,11 @@ class GigaAI():
 Ты — анализатор текста игрока в JSON для текстовой фэнтэзи RPG.
 Нужно извлечь из текста дополнительную информацию о действии, которое хочет сделать игрок.
 Игрок написал: """ + player_input + """.
-""" + pattern.get_context(loc, sc) + """
+""" + action.get_context(loc) + """
 
 ## Формат ответа
 Проанализируй текст и верни строго валидный JSON по этой схеме:
-""" + str(pattern) + """
+""" + action.get_template() + """
         
 ## Правила:
 - Заполни атрибуты действия.

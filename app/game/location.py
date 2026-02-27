@@ -1,19 +1,35 @@
 """app"""
-from app.game.action import Action
-from app.game.scene import Scene
+from app.game.result import ActionResult
+from app.game.state import State
 
 
 class Location:
     """Базовый класс локации"""
     id: str
     name: str
-    description: str
+    desc: str
 
-    scenes: dict[str, Scene]
-    start_scene: str
-    actions: dict[str, Action]
+    state: str
+    states: list[State]
+    context: dict
+
     npcs: list[str]
+    interacts: list[str]
+    events: list[str]
 
-    def get_start_scene(self) -> Scene:
-        """Возвращает стартовую сцену"""
-        return self.scenes[self.start_scene]
+    def perform(self, btn_name: str, player, location) -> ActionResult:
+        """Запускает обработчик кнопки"""
+        btn_handler = self.get_state().buttons[btn_name]
+        return btn_handler(player, location)
+
+    def available_actions(self) -> list[str]:
+        """Возвращает доступные действия"""
+        return list(self.get_state().actions.keys())
+
+    def available_btns(self) -> list[str]:
+        """Возвращает доступные кнопки"""
+        return list(self.get_state().buttons.keys())
+
+    def get_state(self) -> State:
+        """Возвращает текущее состояния"""
+        return next(filter(lambda s: s.id == self.state, self.states))

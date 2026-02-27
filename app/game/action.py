@@ -1,14 +1,32 @@
-from abc import abstractmethod
+from collections.abc import Callable
 from app.game.result import ActionResult
-from app.ai.ai_pattern import AiPattern
 
 
 class Action:
-    """Базовый класс действия"""
-    id: str
-    name: str
-    pattern: AiPattern
+    """Класс действия"""
+    def __init__(self, id: str, handler: Callable, **args) -> None:
+        self.id = id
+        self.handler = handler
+        self.params: dict[str, str] = args.get("params", {})
+        self.required: list[str] = args.get("required", [])
 
-    @abstractmethod
-    def execute(self, player, location, scene, params: dict) -> ActionResult:
+    def execute(self, player, location, params) -> ActionResult:
         """Исполнение действия"""
+        return self.handler(player, location, params)
+
+    def get_template(self) -> str:
+        """Возвращает шаблон для ИИ"""
+        result = "{"
+        for param, value in self.params.items():
+            result += f'\n\t"{param}": {value}'
+        result += "}"
+        return result
+
+    def get_context(self, location) -> str:
+        """Возвращает контекст для ИИ"""
+        result = f"Локация: {location.name}"
+
+        if "npcs" in self.required:
+            result += ", ".join([str(npc) for npc in location.npcs])
+
+        return result
