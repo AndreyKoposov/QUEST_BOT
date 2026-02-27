@@ -8,29 +8,35 @@ class Enter(State):
     """Начальное состояние в таверне"""
     id = "enter"
 
-    play = "🎲 Играть"
-
+    #region Aliases
+    play_btn = "🎲 Играть"
+    play_action = "play"
+    #endregion
+    #region Actions
     @staticmethod
     def play_action_handler(player, location, params) -> ActionResult:
         """Обработчик действия игры"""
         messages = ["Вы сели за ближайший стол. Во что будем играть?"]
 
-        return ActionResult(messages, [], new_state_id="play")
+        location.change_state(player, location, params, "play")
 
+        return ActionResult(messages, [])
+    #endregion
+    #region Buttons
     @staticmethod
     def play_btn_handler(player, location) -> ActionResult:
         """Обработчик кнопки игры"""
         return Enter.play_action_handler(player, location, {})
-
+    #endregion
     actions = {
-        "play": Action("play", play_action_handler)
+        play_action: Action(play_action, play_action_handler)
     }
     buttons = {
-        play: play_btn_handler
+        play_btn: play_btn_handler
     }
 
     def get_btns_menu(self) -> list[list[str]]:
-        return [[self.play]]
+        return [[self.play_btn]]
 
 class Play(State):
     """Выбор игры в таверне"""
@@ -45,19 +51,25 @@ class Play(State):
         """Обработчик действия игры"""
         messages = ["Вы решили сыграть в карты. Сколько ставим?"]
 
-        return ActionResult(messages, [], new_state_id="cards")
+        location.change_state(player, location, params, "cards")
+
+        return ActionResult(messages, [])
     @staticmethod
     def dice_action_handler(player, location, params) -> ActionResult:
         """Обработчик действия игры"""
         messages = ["Вы решили сыграть в кости. Сколько ставим?"]
 
-        return ActionResult(messages, [], new_state_id="dice")
+        location.change_state(player, location, params, "dice")
+
+        return ActionResult(messages, [])
     @staticmethod
     def leave_action_handler(player, location, params) -> ActionResult:
         """Обработчик действия отмены"""
         messages = ["Вы решили, что вам сегодня не до игр."]
 
-        return ActionResult(messages, [], new_state_id="enter")
+        location.change_state(player, location, params, "enter")
+
+        return ActionResult(messages, [])
 
     @staticmethod
     def cards_btn_handler(player, location) -> ActionResult:
@@ -101,6 +113,7 @@ class Cards(State):
         bet = params.get("bet", 0)
         player_score = randint(1, 11)
         enemy_score = randint(1, 11)
+        enemy_stoped = False
 
         messages = [f"Вы решили поставить {bet} монет. Начнём!"]
         messages = [f"Вы вытянули карту: {player_score} очков!"]
@@ -108,14 +121,19 @@ class Cards(State):
         location.context["game"]["bet"] = bet
         location.context["game"]["player_score"] = player_score
         location.context["game"]["enemy_score"] = enemy_score
+        location.context["game"]["enemy_stoped"] = enemy_stoped
 
-        return ActionResult(messages, [], new_state_id="cards_game")
+        location.change_state(player, location, params, "cards_game")
+
+        return ActionResult(messages, [])
     @staticmethod
     def leave_action_handler(player, location, params) -> ActionResult:
         """Обработчик отмены игры"""
         messages = ["Вы решили, что не хотите сейчас играть"]
 
-        return ActionResult(messages, [], new_state_id="enter")
+        location.change_state(player, location, params, "enter")
+
+        return ActionResult(messages, [])
 
     @staticmethod
     def no_bet_btn_handler(player, location) -> ActionResult:
@@ -201,7 +219,8 @@ class CardsGame(State):
         else:
             messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПобеда!")
 
-        return ActionResult(messages, [], new_state_id="cards")
+        location.change_state(player, location, params, "cards")
+        return ActionResult(messages, [])
     @staticmethod
     def stop_action_handler(player, location, params) -> ActionResult:
         """Обработчик действия игры"""
@@ -231,7 +250,8 @@ class CardsGame(State):
         else:
             messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПобеда!")
 
-        return ActionResult(messages, [], new_state_id="cards")
+        location.change_state(player, location, params, "cards")
+        return ActionResult(messages, [])
 
     @staticmethod
     def take_btn_handler(player, location) -> ActionResult:

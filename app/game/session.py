@@ -33,9 +33,6 @@ class GameSession:
             summery = self.__get_summery(text, result.story)
             result.messages.append(summery)
 
-        if result.new_state_id:
-            self.location.state = result.new_state_id
-
         return result.messages, self.location.get_state().get_btns_menu()
 
     def __extract_action(self, text: str) -> tuple[Action | None, dict]:

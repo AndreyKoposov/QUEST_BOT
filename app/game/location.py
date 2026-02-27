@@ -33,3 +33,9 @@ class Location:
     def get_state(self) -> State:
         """Возвращает текущее состояния"""
         return next(filter(lambda s: s.id == self.state, self.states))
+
+    def change_state(self, player, location, params, state_id: str):
+        """Сменяет состояние локации на новое"""
+        self.get_state().on_exit(player, location, params)
+        self.state = state_id
+        self.get_state().on_enter(player, location, params)
