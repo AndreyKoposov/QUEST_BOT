@@ -1,6 +1,9 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from abc import abstractmethod
 from collections.abc import Callable
-from app.game.action import Action
+if TYPE_CHECKING:
+    from app.game.action import Action
 
 
 class State:

@@ -4,9 +4,9 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
-from app.ai.giga import GigaAI
-from app.utils.logger import Logger
-from app.game.session import GameSession
+from app.ai import GigaAI
+from app.utils import Logger
+from app.game import GameSession
 
 
 # Переменные окружения

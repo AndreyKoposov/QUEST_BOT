@@ -1,6 +1,6 @@
 """json, logger"""
 from json import loads, JSONDecodeError
-from app.utils.logger import Logger
+from app.utils import Logger
 
 
 class Preprocessor():

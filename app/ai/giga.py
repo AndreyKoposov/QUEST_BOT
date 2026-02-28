@@ -1,8 +1,11 @@
 """langchain_gigachat, langchain_core"""
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from langchain_gigachat import GigaChat
-from app.game.location import Location
-from app.utils.logger import Logger
-from app.game.action import Action
+from app.utils import Logger
+if TYPE_CHECKING:
+    from app.game import Location
+    from app.game import Action
 
 
 class GigaAI():

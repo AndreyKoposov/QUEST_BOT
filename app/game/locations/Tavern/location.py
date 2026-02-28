@@ -1,5 +1,5 @@
-from app.game.location import Location
 from app.game.locations.Tavern.states import Enter, Play, Cards, CardsGame
+from app.game.location import Location
 
 
 class Tavern(Location):
