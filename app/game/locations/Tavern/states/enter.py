@@ -1,7 +1,6 @@
-from app.game.structures import ActionResult
 from app.game.action import Action
 from app.game.state import State
-from app.game.structures import GameState
+from app.game.structures import GameState, ActionResult
 
 
 class Enter(State):
@@ -17,16 +16,17 @@ class Enter(State):
     @staticmethod
     def play_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры"""
+        messages = []
         game_name = params.get("game_name", None)
         if game_name:
             if game_name == "карты":
-                game.location.change_state(game, "cards_start", params)
-            if game_name == "кубики":
-                game.location.change_state(game, "dice_start", params)
-            return ActionResult([], [])
-
-        messages = ["Вы сели за ближайший стол. Во что будем играть?"]
-
+                return game.location.change_state(game, "cards_start", params)
+            elif game_name == "кубики":
+                return game.location.change_state(game, "dice_start", params)
+            else:
+                messages.append("Никто не понял, в какую игру вы хотите сыграть")
+        else:
+            messages = ["Вы сели за ближайший стол. Во что будем играть?"]
         game.location.change_state(game, "select_game", params)
 
         return ActionResult(messages, [])
@@ -52,8 +52,8 @@ class Enter(State):
     def get_btns_menu(self) -> list[list[str]]:
         return [[self.play_btn]]
 
-    def on_enter(self, game: GameState, params: dict):
-        pass
+    def on_enter(self, game: GameState, params: dict) -> ActionResult:
+        return ActionResult([], [])
 
-    def on_exit(self, game: GameState, params: dict):
-        pass
+    def on_exit(self, game: GameState, params: dict) -> ActionResult:
+        return ActionResult([], [])

@@ -1,8 +1,9 @@
 """app"""
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from app.game.structures import ActionResult
 if TYPE_CHECKING:
-    from app.game.structures import ActionResult, GameState
+    from app.game.structures import GameState
     from app.game.state import State
 
 
@@ -37,8 +38,18 @@ class Location:
         """Возвращает текущее состояния"""
         return next(filter(lambda s: s.id == self.state, self.states))
 
-    def change_state(self, game: GameState, state_id: str, params: dict):
+    def change_state(self, game: GameState, state_id: str, params: dict) -> ActionResult:
         """Сменяет состояние локации на новое"""
-        self.get_state().on_exit(game, params)
+        messages = list[str]()
+        story = list[str]()
+
+        result_1 = self.get_state().on_exit(game, params)
         self.state = state_id
-        self.get_state().on_enter(game, params)
+        result_2 = self.get_state().on_enter(game, params)
+
+        messages += result_1.messages
+        messages += result_2.messages
+        story += result_1.story
+        story += result_2.story
+
+        return ActionResult(messages, story)

@@ -118,8 +118,8 @@ class CardsPlay(State):
     def get_btns_menu(self) -> list[list[str]]:
         return [[self.take_btn, self.stop_btn]]
 
-    def on_enter(self, game: GameState, params: dict):
-        pass
+    def on_enter(self, game: GameState, params: dict) -> ActionResult:
+        return ActionResult([], [])
 
-    def on_exit(self, game: GameState, params: dict):
-        pass
+    def on_exit(self, game: GameState, params: dict) -> ActionResult:
+        return ActionResult([], [])

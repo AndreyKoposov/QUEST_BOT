@@ -72,8 +72,8 @@ class SelectGame(State):
     def get_btns_menu(self) -> list[list[str]]:
         return [[self.cards_btn, self.dice_btn], [self.leave_btn]]
 
-    def on_enter(self, game: GameState, params: dict):
-        pass
+    def on_enter(self, game: GameState, params: dict) -> ActionResult:
+        return ActionResult([], [])
 
-    def on_exit(self, game: GameState, params: dict):
-        pass
+    def on_exit(self, game: GameState, params: dict) -> ActionResult:
+        return ActionResult([], [])

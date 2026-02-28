@@ -1,8 +1,7 @@
 from random import randint
-from app.game.structures import ActionResult
 from app.game.action import Action
 from app.game.state import State
-from app.game.structures import GameState
+from app.game.structures import GameState, ActionResult
 
 
 class CardsStart(State):
@@ -28,7 +27,7 @@ class CardsStart(State):
         enemy_stoped = False
 
         messages = [f"Вы решили поставить {bet} монет. Начнём!"]
-        messages = [f"Вы вытянули карту: {player_score} очков!"]
+        messages.append(f"Вы вытянули карту: {player_score} очков!")
 
         game.location.context["game"]["bet"] = bet
         game.location.context["game"]["player_score"] = player_score
@@ -80,10 +79,12 @@ class CardsStart(State):
     def get_btns_menu(self) -> list[list[str]]:
         return [[self.no_bet_btn, self.small_bet_btn, self.big_bet_btn], [self.leave_btn]]
 
-    def on_enter(self, game: GameState, params: dict):
+    def on_enter(self, game: GameState, params: dict) -> ActionResult:
         bet = params.get("bet", None)
         if bet is not None:
-            self.start_game_action_handler(game, params)
+            return self.start_game_action_handler(game, params)
 
-    def on_exit(self, game: GameState, params: dict):
-        pass
+        return ActionResult([], [])
+
+    def on_exit(self, game: GameState, params: dict) -> ActionResult:
+        return ActionResult([], [])

@@ -1,6 +1,9 @@
 """Модуль содержит структур данных игры"""
-from app.game.player import Player
-from app.game.location import Location
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.game.player import Player
+    from app.game.location import Location
 
 
 class ActionResult():

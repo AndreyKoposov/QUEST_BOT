@@ -4,7 +4,7 @@ from abc import abstractmethod
 from collections.abc import Callable
 if TYPE_CHECKING:
     from app.game.action import Action
-    from app.game.structures import GameState
+    from app.game.structures import GameState, ActionResult
 
 
 class State:
@@ -19,9 +19,9 @@ class State:
         """Возвращает структурированный список кнопок"""
 
     @abstractmethod
-    def on_enter(self, game: GameState, params: dict):
+    def on_enter(self, game: GameState, params: dict) -> ActionResult:
         """Вызывается при входе в состояние"""
 
     @abstractmethod
-    def on_exit(self, game: GameState, params: dict):
+    def on_exit(self, game: GameState, params: dict) -> ActionResult:
         """Вызывается при выходе из состояния"""
