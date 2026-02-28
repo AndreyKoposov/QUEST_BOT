@@ -39,8 +39,7 @@ class GameSession:
 
     def __extract_action(self, text: str) -> tuple[Action | None, dict]:
         """Свободный ввод"""
-        raw_response = self.__ai.parse_action(text,
-                                              self.game.location)
+        raw_response = self.__ai.parse_action(text, self.game.location.available_actions())
         action_id = self.__pr.preprocess(raw_response)["action"]
 
         if action_id not in self.game.location.available_actions():
@@ -51,9 +50,7 @@ class GameSession:
         if len(action.params) == 0:
             return action, {}
 
-        raw_response = self.__ai.parse_params(text,
-                                              action,
-                                              self.game.location)
+        raw_response = self.__ai.parse_params(text, action, self.game)
         params = self.__pr.preprocess(raw_response)
 
         return action, params

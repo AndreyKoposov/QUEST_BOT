@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from collections.abc import Callable
 if TYPE_CHECKING:
-    from app.game.structures import ActionResult
+    from app.game.structures import ActionResult, GameState
 
 
 class Action:
@@ -25,11 +25,11 @@ class Action:
         result += "}"
         return result
 
-    def get_context(self, location) -> str:
+    def get_context(self, game: GameState) -> str:
         """Возвращает контекст для ИИ"""
-        result = f"Локация: {location.name}"
+        result = f"Локация: {game.location.name}"
 
         if "npcs" in self.required:
-            result += ", ".join([str(npc) for npc in location.npcs])
+            result += ", ".join([str(npc) for npc in game.location.npcs])
 
         return result

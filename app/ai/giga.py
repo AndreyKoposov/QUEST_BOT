@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from langchain_gigachat import GigaChat
 from app.utils.logger import Logger
 if TYPE_CHECKING:
-    from app.game.location import Location
+    from app.game.structures import GameState
     from app.game.action import Action
 
 
@@ -20,25 +20,23 @@ class GigaAI():
             timeout=15
         )
 
-    def parse_action(self, player_input: str, location: Location):
+    def parse_action(self, player_input: str, actions: list[str]):
         """Парсит ввод от пользователя"""
         query = \
 """
 ## Задача
-Ты — переводчик текста игрока в JSON для текстовой фэнтэзи RPG.
-Нужно определить по тексту какое действие хочет сделать игрок.
+Нужно определить по тексту какое действие из списка хочет сделать игрок.
 Игрок написал: """ + player_input + """.
-Локация: """ + location.name + """.
-Доступные действия: """ + ', '.join([str(act) for act in location.available_actions()]) + """.
+Список действий: """ + ', '.join([str(act) for act in actions]) + """.
 
 ## Формат ответа
-Проанализируй текст и верни только строго валидный JSON по этой схеме:
+Верни только строго валидный JSON по этой схеме:
 {
     "action": "(одно из действий)"
 }
 
 ## Правила:
-- Не придумывай цели, которых нет в списке.
+- Не придумывай действия, которых нет в списке. Выбирай наиболее подходящее.
 - Ответ должен содержать ТОЛЬКО JSON, без пояснений.
 """
         print(query)
@@ -51,7 +49,7 @@ class GigaAI():
         Logger.error(f"Bad AI answer:\n{res}")
         return ""
 
-    def parse_params(self, player_input: str, action: Action, loc: Location):
+    def parse_params(self, player_input: str, action: Action, game: GameState):
         """Парсит ввод от пользователя"""
         query = \
 """
@@ -71,7 +69,7 @@ class GigaAI():
 - Числа извлекай из контекста (35 монет -> 35, несколько монет -> 2-3)
 
 Игрок написал: """ + player_input + """.
-""" + action.get_context(loc) + """
+""" + action.get_context(game) + """
 
 ## Формат ответа
 Верни только строго валидный JSON по этой схеме:
