@@ -11,6 +11,7 @@ class Enter(State):
 
     #region Aliases
     play_btn = "🎲 Играть"
+
     play_action = "play"
     #endregion
     #region Actions
@@ -39,3 +40,9 @@ class Enter(State):
 
     def get_btns_menu(self) -> list[list[str]]:
         return [[self.play_btn]]
+
+    def on_enter(self, player: Player, location: Location, params: dict):
+        pass
+
+    def on_exit(self, player: Player, location: Location, params: dict):
+        pass

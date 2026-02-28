@@ -10,11 +10,16 @@ class CardsStart(State):
     """Старт игры в карты"""
     id = "cards_start"
 
-    no_bet = "🙅‍♂️ Без ставки"
-    small_bet = "💰 Поставить 5 монет"
-    big_bet = "💰💰 Поставить 20 монет"
-    leave = "❌ Вернуться"
+    #region Aliases
+    no_bet_btn = "🙅‍♂️ Без ставки"
+    small_bet_btn = "💰 Поставить 5 монет"
+    big_bet_btn = "💰💰 Поставить 20 монет"
+    leave_btn = "❌ Вернуться"
 
+    start_action = "start_game"
+    leave_action = "leave"
+    #endregion
+    #region Actions
     @staticmethod
     def start_game_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
         """Обработчик действия игры"""
@@ -42,7 +47,8 @@ class CardsStart(State):
         location.change_state(player, location, params, "enter")
 
         return ActionResult(messages, [])
-
+    #endregion
+    #region Buttons
     @staticmethod
     def no_bet_btn_handler(player: Player, location: Location) -> ActionResult:
         """Обработчик кнопки игры"""
@@ -59,17 +65,24 @@ class CardsStart(State):
     def leave_btn_handler(player: Player, location: Location) -> ActionResult:
         """Обработчик кнопки игры"""
         return CardsStart.leave_action_handler(player, location, {})
+    #endregion
 
     actions = {
-        "start_game": Action("start_game", start_game_action_handler),
-        "leave": Action("leave", leave_action_handler)
+        start_action: Action(start_action, start_game_action_handler),
+        leave_action: Action(leave_action, leave_action_handler)
     }
     buttons = {
-        no_bet: no_bet_btn_handler,
-        small_bet: small_bet_btn_handler,
-        big_bet: big_bet_btn_handler,
-        leave: leave_btn_handler
+        no_bet_btn: no_bet_btn_handler,
+        small_bet_btn: small_bet_btn_handler,
+        big_bet_btn: big_bet_btn_handler,
+        leave_btn: leave_btn_handler
     }
 
     def get_btns_menu(self) -> list[list[str]]:
-        return [[self.no_bet, self.small_bet, self.big_bet], [self.leave]]
+        return [[self.no_bet_btn, self.small_bet_btn, self.big_bet_btn], [self.leave_btn]]
+
+    def on_enter(self, player: Player, location: Location, params: dict):
+        pass
+
+    def on_exit(self, player: Player, location: Location, params: dict):
+        pass

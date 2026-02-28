@@ -10,9 +10,14 @@ class CardsPlay(State):
     """Игра в карты"""
     id = "cards_play"
 
-    take = "🃏 Ещё"
-    stop = "❌ Пас"
+    #region Aliases
+    take_btn = "🃏 Ещё"
+    stop_btn = "❌ Пас"
 
+    take_action = "take_card"
+    stop_action = "stop"
+    #endregion
+    #region Actions
     @staticmethod
     def take_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
         """Обработчик действия игры"""
@@ -91,7 +96,8 @@ class CardsPlay(State):
 
         location.change_state(player, location, params, "cards_start")
         return ActionResult(messages, [])
-
+    #endregion
+    #region Buttons
     @staticmethod
     def take_btn_handler(player: Player, location: Location) -> ActionResult:
         """Обработчик кнопки взятия карты"""
@@ -100,15 +106,22 @@ class CardsPlay(State):
     def stop_btn_handler(player: Player, location: Location) -> ActionResult:
         """Обработчик кнопки паса"""
         return CardsPlay.stop_action_handler(player, location, {})
+    #endregion
 
     actions = {
-        "take_card": Action("take_card", take_action_handler),
-        "stop": Action("stop", stop_action_handler)
+        take_action: Action(take_action, take_action_handler),
+        stop_action: Action(stop_action, stop_action_handler)
     }
     buttons = {
-        take: take_btn_handler,
-        stop: stop_btn_handler
+        take_btn: take_btn_handler,
+        stop_btn: stop_btn_handler
     }
 
     def get_btns_menu(self) -> list[list[str]]:
-        return [[self.take, self.stop]]
+        return [[self.take_btn, self.stop_btn]]
+
+    def on_enter(self, player: Player, location: Location, params: dict):
+        pass
+
+    def on_exit(self, player: Player, location: Location, params: dict):
+        pass

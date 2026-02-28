@@ -9,10 +9,16 @@ class SelectGame(State):
     """Выбор игры в таверне"""
     id = "select_game"
 
-    cards = "🃏 Карты"
-    dice = "🎲 Кости"
-    leave = "❌ Вернуться"
+    #region Aliases
+    cards_btn = "🃏 Карты"
+    dice_btn = "🎲 Кости"
+    leave_btn = "❌ Вернуться"
 
+    cards_action = "play_cards"
+    dice_action = "play_dice"
+    leave_action = "leave"
+    #endregion
+    #region Actions
     @staticmethod
     def cards_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
         """Обработчик действия игры"""
@@ -37,7 +43,8 @@ class SelectGame(State):
         location.change_state(player, location, params, "enter")
 
         return ActionResult(messages, [])
-
+    #endregion
+    #region Buttons
     @staticmethod
     def cards_btn_handler(player: Player, location: Location) -> ActionResult:
         """Обработчик кнопки выбора карт"""
@@ -50,17 +57,24 @@ class SelectGame(State):
     def leave_btn_handler(player: Player, location: Location) -> ActionResult:
         """Обработчик кнопки отмены"""
         return SelectGame.leave_action_handler(player, location, {})
+    #endregion
 
     actions = {
-        "play_cards": Action("play_cards", cards_action_handler),
-        "play_dice": Action("play_dice", dice_action_handler),
-        "leave": Action("leave", leave_action_handler)
+        cards_action: Action(cards_action, cards_action_handler),
+        dice_action: Action(dice_action, dice_action_handler),
+        leave_action: Action(leave_action, leave_action_handler)
     }
     buttons = {
-        cards: cards_btn_handler,
-        dice: dice_btn_handler,
-        leave: leave_btn_handler
+        cards_btn: cards_btn_handler,
+        dice_btn: dice_btn_handler,
+        leave_btn: leave_btn_handler
     }
 
     def get_btns_menu(self) -> list[list[str]]:
-        return [[self.cards, self.dice], [self.leave]]
+        return [[self.cards_btn, self.dice_btn], [self.leave_btn]]
+
+    def on_enter(self, player: Player, location: Location, params: dict):
+        pass
+
+    def on_exit(self, player: Player, location: Location, params: dict):
+        pass
