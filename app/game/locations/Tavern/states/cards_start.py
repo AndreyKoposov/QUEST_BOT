@@ -1,9 +1,8 @@
 from random import randint
-from app.game.result import ActionResult
+from app.game.structures import ActionResult
 from app.game.action import Action
 from app.game.state import State
-from app.game.player import Player
-from app.game.location import Location
+from app.game.structures import GameState
 
 
 class CardsStart(State):
@@ -21,7 +20,7 @@ class CardsStart(State):
     #endregion
     #region Actions
     @staticmethod
-    def start_game_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
+    def start_game_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры"""
         bet = params.get("bet", 0)
         player_score = randint(1, 11)
@@ -31,40 +30,40 @@ class CardsStart(State):
         messages = [f"Вы решили поставить {bet} монет. Начнём!"]
         messages = [f"Вы вытянули карту: {player_score} очков!"]
 
-        location.context["game"]["bet"] = bet
-        location.context["game"]["player_score"] = player_score
-        location.context["game"]["enemy_score"] = enemy_score
-        location.context["game"]["enemy_stoped"] = enemy_stoped
+        game.location.context["game"]["bet"] = bet
+        game.location.context["game"]["player_score"] = player_score
+        game.location.context["game"]["enemy_score"] = enemy_score
+        game.location.context["game"]["enemy_stoped"] = enemy_stoped
 
-        location.change_state(player, location, params, "cards_play")
+        game.location.change_state(game, "cards_play", params)
 
         return ActionResult(messages, [])
     @staticmethod
-    def leave_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
+    def leave_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик отмены игры"""
         messages = ["Вы решили, что не хотите сейчас играть"]
 
-        location.change_state(player, location, params, "enter")
+        game.location.change_state(game, "enter", params)
 
         return ActionResult(messages, [])
     #endregion
     #region Buttons
     @staticmethod
-    def no_bet_btn_handler(player: Player, location: Location) -> ActionResult:
+    def no_bet_btn_handler(game: GameState) -> ActionResult:
         """Обработчик кнопки игры"""
-        return CardsStart.start_game_action_handler(player, location, {})
+        return CardsStart.start_game_action_handler(game, {})
     @staticmethod
-    def small_bet_btn_handler(player: Player, location: Location) -> ActionResult:
+    def small_bet_btn_handler(game: GameState) -> ActionResult:
         """Обработчик кнопки игры"""
-        return CardsStart.start_game_action_handler(player, location, {"bet": 5})
+        return CardsStart.start_game_action_handler(game, {"bet": 5})
     @staticmethod
-    def big_bet_btn_handler(player: Player, location: Location) -> ActionResult:
+    def big_bet_btn_handler(game: GameState) -> ActionResult:
         """Обработчик кнопки игры"""
-        return CardsStart.start_game_action_handler(player, location, {"bet": 20})
+        return CardsStart.start_game_action_handler(game, {"bet": 20})
     @staticmethod
-    def leave_btn_handler(player: Player, location: Location) -> ActionResult:
+    def leave_btn_handler(game: GameState) -> ActionResult:
         """Обработчик кнопки игры"""
-        return CardsStart.leave_action_handler(player, location, {})
+        return CardsStart.leave_action_handler(game, {})
     #endregion
 
     actions = {
@@ -81,8 +80,8 @@ class CardsStart(State):
     def get_btns_menu(self) -> list[list[str]]:
         return [[self.no_bet_btn, self.small_bet_btn, self.big_bet_btn], [self.leave_btn]]
 
-    def on_enter(self, player: Player, location: Location, params: dict):
+    def on_enter(self, game: GameState, params: dict):
         pass
 
-    def on_exit(self, player: Player, location: Location, params: dict):
+    def on_exit(self, game: GameState, params: dict):
         pass

@@ -1,8 +1,7 @@
-from app.game.result import ActionResult
+from app.game.structures import ActionResult
 from app.game.action import Action
 from app.game.state import State
-from app.game.player import Player
-from app.game.location import Location
+from app.game.structures import GameState
 
 
 class SelectGame(State):
@@ -20,43 +19,43 @@ class SelectGame(State):
     #endregion
     #region Actions
     @staticmethod
-    def cards_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
+    def cards_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры"""
         messages = ["Вы решили сыграть в карты. Сколько ставим?"]
 
-        location.change_state(player, location, params, "cards_start")
+        game.location.change_state(game, "cards_start", params)
 
         return ActionResult(messages, [])
     @staticmethod
-    def dice_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
+    def dice_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры"""
         messages = ["Вы решили сыграть в кости. Сколько ставим?"]
 
-        location.change_state(player, location, params, "dice_start")
+        game.location.change_state(game, "dice_start", params)
 
         return ActionResult(messages, [])
     @staticmethod
-    def leave_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
+    def leave_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия отмены"""
         messages = ["Вы решили, что вам сегодня не до игр."]
 
-        location.change_state(player, location, params, "enter")
+        game.location.change_state(game, "enter", params)
 
         return ActionResult(messages, [])
     #endregion
     #region Buttons
     @staticmethod
-    def cards_btn_handler(player: Player, location: Location) -> ActionResult:
+    def cards_btn_handler(game: GameState) -> ActionResult:
         """Обработчик кнопки выбора карт"""
-        return SelectGame.cards_action_handler(player, location, {})
+        return SelectGame.cards_action_handler(game, {})
     @staticmethod
-    def dice_btn_handler(player: Player, location: Location) -> ActionResult:
+    def dice_btn_handler(game: GameState) -> ActionResult:
         """Обработчик кнопки выбора костей"""
-        return SelectGame.dice_action_handler(player, location, {})
+        return SelectGame.dice_action_handler(game, {})
     @staticmethod
-    def leave_btn_handler(player: Player, location: Location) -> ActionResult:
+    def leave_btn_handler(game: GameState) -> ActionResult:
         """Обработчик кнопки отмены"""
-        return SelectGame.leave_action_handler(player, location, {})
+        return SelectGame.leave_action_handler(game, {})
     #endregion
 
     actions = {
@@ -73,8 +72,8 @@ class SelectGame(State):
     def get_btns_menu(self) -> list[list[str]]:
         return [[self.cards_btn, self.dice_btn], [self.leave_btn]]
 
-    def on_enter(self, player: Player, location: Location, params: dict):
+    def on_enter(self, game: GameState, params: dict):
         pass
 
-    def on_exit(self, player: Player, location: Location, params: dict):
+    def on_exit(self, game: GameState, params: dict):
         pass

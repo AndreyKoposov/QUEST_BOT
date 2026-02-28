@@ -1,9 +1,7 @@
 from random import randint
-from app.game.result import ActionResult
+from app.game.structures import ActionResult, GameState
 from app.game.action import Action
 from app.game.state import State
-from app.game.player import Player
-from app.game.location import Location
 
 
 class CardsPlay(State):
@@ -19,11 +17,11 @@ class CardsPlay(State):
     #endregion
     #region Actions
     @staticmethod
-    def take_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
+    def take_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры"""
-        player_score = location.context["game"]["player_score"]
-        enemy_score = location.context["game"]["enemy_score"]
-        enemy_stoped = location.context["game"].get("enemy_stoped", False)
+        player_score = game.location.context["game"]["player_score"]
+        enemy_score = game.location.context["game"]["enemy_score"]
+        enemy_stoped = game.location.context["game"].get("enemy_stoped", False)
         messages = []
 
         player_score += randint(1, 11)
@@ -37,9 +35,9 @@ class CardsPlay(State):
                 enemy_score += randint(1, 11)
                 messages.append("Противник берет еще")
 
-        location.context["game"]["player_score"] = player_score
-        location.context["game"]["enemy_score"] = enemy_score
-        location.context["game"]["enemy_stoped"] = enemy_stoped
+        game.location.context["game"]["player_score"] = player_score
+        game.location.context["game"]["enemy_score"] = enemy_score
+        game.location.context["game"]["enemy_stoped"] = enemy_stoped
 
         if player_score < 22:
             return ActionResult(messages, [])
@@ -63,14 +61,14 @@ class CardsPlay(State):
         else:
             messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПобеда!")
 
-        location.change_state(player, location, params, "cards_start")
+        game.location.change_state(game, "cards_start", params)
         return ActionResult(messages, [])
     @staticmethod
-    def stop_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
+    def stop_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры"""
-        player_score = location.context["game"]["player_score"]
-        enemy_score = location.context["game"]["enemy_score"]
-        enemy_stoped = location.context["game"].get("enemy_stoped", False)
+        player_score = game.location.context["game"]["player_score"]
+        enemy_score = game.location.context["game"]["enemy_score"]
+        enemy_stoped = game.location.context["game"].get("enemy_stoped", False)
         messages = []
 
         messages = ["Вы решили больше не брать карту"]
@@ -94,18 +92,18 @@ class CardsPlay(State):
         else:
             messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПобеда!")
 
-        location.change_state(player, location, params, "cards_start")
+        game.location.change_state(game, "cards_start", params)
         return ActionResult(messages, [])
     #endregion
     #region Buttons
     @staticmethod
-    def take_btn_handler(player: Player, location: Location) -> ActionResult:
+    def take_btn_handler(game: GameState) -> ActionResult:
         """Обработчик кнопки взятия карты"""
-        return CardsPlay.take_action_handler(player, location, {})
+        return CardsPlay.take_action_handler(game, {})
     @staticmethod
-    def stop_btn_handler(player: Player, location: Location) -> ActionResult:
+    def stop_btn_handler(game: GameState) -> ActionResult:
         """Обработчик кнопки паса"""
-        return CardsPlay.stop_action_handler(player, location, {})
+        return CardsPlay.stop_action_handler(game, {})
     #endregion
 
     actions = {
@@ -120,8 +118,8 @@ class CardsPlay(State):
     def get_btns_menu(self) -> list[list[str]]:
         return [[self.take_btn, self.stop_btn]]
 
-    def on_enter(self, player: Player, location: Location, params: dict):
+    def on_enter(self, game: GameState, params: dict):
         pass
 
-    def on_exit(self, player: Player, location: Location, params: dict):
+    def on_exit(self, game: GameState, params: dict):
         pass

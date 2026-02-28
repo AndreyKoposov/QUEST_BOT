@@ -2,7 +2,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from app.game.result import ActionResult
+    from app.game.structures import ActionResult, GameState
     from app.game.state import State
 
 
@@ -20,10 +20,10 @@ class Location:
     interacts: list[str]
     events: list[str]
 
-    def perform(self, btn_name: str, player, location) -> ActionResult:
+    def perform(self, btn_name: str, game) -> ActionResult:
         """Запускает обработчик кнопки"""
         btn_handler = self.get_state().buttons[btn_name]
-        return btn_handler(player, location)
+        return btn_handler(game)
 
     def available_actions(self) -> list[str]:
         """Возвращает доступные действия"""
@@ -37,8 +37,8 @@ class Location:
         """Возвращает текущее состояния"""
         return next(filter(lambda s: s.id == self.state, self.states))
 
-    def change_state(self, player, location, params, state_id: str):
+    def change_state(self, game: GameState, state_id: str, params: dict):
         """Сменяет состояние локации на новое"""
-        self.get_state().on_exit(player, location, params)
+        self.get_state().on_exit(game, params)
         self.state = state_id
-        self.get_state().on_enter(player, location, params)
+        self.get_state().on_enter(game, params)

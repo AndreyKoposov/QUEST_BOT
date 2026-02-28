@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from collections.abc import Callable
 if TYPE_CHECKING:
-    from app.game.result import ActionResult
+    from app.game.structures import ActionResult
 
 
 class Action:
@@ -13,9 +13,9 @@ class Action:
         self.params: dict[str, str] = args.get("params", {})
         self.required: list[str] = args.get("required", [])
 
-    def execute(self, player, location, params) -> ActionResult:
+    def execute(self, game, params) -> ActionResult:
         """Исполнение действия"""
-        return self.handler(player, location, params)
+        return self.handler(game, params)
 
     def get_template(self) -> str:
         """Возвращает шаблон для ИИ"""

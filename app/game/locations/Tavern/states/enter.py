@@ -1,8 +1,7 @@
-from app.game.result import ActionResult
+from app.game.structures import ActionResult
 from app.game.action import Action
 from app.game.state import State
-from app.game.player import Player
-from app.game.location import Location
+from app.game.structures import GameState
 
 
 class Enter(State):
@@ -16,19 +15,19 @@ class Enter(State):
     #endregion
     #region Actions
     @staticmethod
-    def play_action_handler(player: Player, location: Location, params: dict) -> ActionResult:
+    def play_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры"""
         messages = ["Вы сели за ближайший стол. Во что будем играть?"]
 
-        location.change_state(player, location, params, "select_game")
+        game.location.change_state(game, "select_game", params)
 
         return ActionResult(messages, [])
     #endregion
     #region Buttons
     @staticmethod
-    def play_btn_handler(player: Player, location: Location) -> ActionResult:
+    def play_btn_handler(game: GameState) -> ActionResult:
         """Обработчик кнопки игры"""
-        return Enter.play_action_handler(player, location, {})
+        return Enter.play_action_handler(game, {})
     #endregion
 
     actions = {
@@ -41,8 +40,8 @@ class Enter(State):
     def get_btns_menu(self) -> list[list[str]]:
         return [[self.play_btn]]
 
-    def on_enter(self, player: Player, location: Location, params: dict):
+    def on_enter(self, game: GameState, params: dict):
         pass
 
-    def on_exit(self, player: Player, location: Location, params: dict):
+    def on_exit(self, game: GameState, params: dict):
         pass
