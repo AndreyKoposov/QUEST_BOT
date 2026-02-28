@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from app.utils import Preprocessor
-from app.game import Player
-from app.game.locations.Tavern.location import Tavern
+from app.utils.preprocessor import Preprocessor
+from app.game.player import Player
+from .locations import Tavern
 if TYPE_CHECKING:
-    from app.ai import GigaAI
-    from app.game import Location
-    from app.game import Action
+    from app.ai.giga import GigaAI
+    from app.game.location import Location
+    from app.game.action import Action
 
 
 class GameSession:

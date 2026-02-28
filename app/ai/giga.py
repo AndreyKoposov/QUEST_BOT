@@ -2,10 +2,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from langchain_gigachat import GigaChat
-from app.utils import Logger
+from app.utils.logger import Logger
 if TYPE_CHECKING:
-    from app.game import Location
-    from app.game import Action
+    from app.game.location import Location
+    from app.game.action import Action
 
 
 class GigaAI():
