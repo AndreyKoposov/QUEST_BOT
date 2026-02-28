@@ -81,7 +81,9 @@ class CardsStart(State):
         return [[self.no_bet_btn, self.small_bet_btn, self.big_bet_btn], [self.leave_btn]]
 
     def on_enter(self, game: GameState, params: dict):
-        pass
+        bet = params.get("bet", None)
+        if bet is not None:
+            self.start_game_action_handler(game, params)
 
     def on_exit(self, game: GameState, params: dict):
         pass

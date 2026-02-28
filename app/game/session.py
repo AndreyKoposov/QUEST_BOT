@@ -33,6 +33,7 @@ class GameSession:
                 return ["Unknown action"], self.game.location.get_state().get_btns_menu()
             result = action.execute(self.game, params)
             summery = self.__get_summery(text, result.story)
+            result.messages.clear()
             result.messages.append(summery)
 
         return result.messages, self.game.location.get_state().get_btns_menu()

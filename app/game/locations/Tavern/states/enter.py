@@ -17,6 +17,14 @@ class Enter(State):
     @staticmethod
     def play_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры"""
+        game_name = params.get("game_name", None)
+        if game_name:
+            if game_name == "карты":
+                game.location.change_state(game, "cards_start", params)
+            if game_name == "кубики":
+                game.location.change_state(game, "dice_start", params)
+            return ActionResult([], [])
+
         messages = ["Вы сели за ближайший стол. Во что будем играть?"]
 
         game.location.change_state(game, "select_game", params)
@@ -31,7 +39,11 @@ class Enter(State):
     #endregion
 
     actions = {
-        play_action: Action(play_action, play_action_handler)
+        play_action: Action(play_action, play_action_handler, params=
+                            {
+                                "game_name": "(карты/кубики)",
+                                "bet": "(ставка, количество монет; укажи 0, если игрок хочет играть на интерес)"
+                            })
     }
     buttons = {
         play_btn: play_btn_handler

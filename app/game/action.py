@@ -22,7 +22,7 @@ class Action:
         result = "{"
         for param, value in self.params.items():
             result += f'\n\t"{param}": {value}'
-        result += "}"
+        result += "\n}"
         return result
 
     def get_context(self, game: GameState) -> str:
