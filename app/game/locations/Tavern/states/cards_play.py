@@ -7,8 +7,7 @@ from .states_id import StateID
 
 class CardsPlay(State):
     """Игра в карты"""
-    id = "cards_play"
-
+    id = StateID.CARDS_PLAY
     bet: int # Ставка
     p_score: int # Очки игрока
     e_score: int # Очки противника

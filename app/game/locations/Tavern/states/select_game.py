@@ -7,7 +7,7 @@ from .states_id import StateID
 
 class SelectGame(State):
     """Выбор игры в таверне"""
-    id = "select_game"
+    id = StateID.SELECT_GAME
 
     #region Aliases
     cards_btn = "🃏 Карты"

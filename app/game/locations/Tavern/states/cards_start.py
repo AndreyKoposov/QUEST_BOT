@@ -7,7 +7,7 @@ from .states_id import StateID
 
 class CardsStart(State):
     """Старт игры в карты"""
-    id = "cards_start"
+    id = StateID.CARDS_START
 
     #region Aliases
     no_bet_btn = "🙅‍♂️ Без ставки"
