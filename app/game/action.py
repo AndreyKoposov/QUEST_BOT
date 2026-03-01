@@ -29,6 +29,7 @@ class Action:
         """Возвращает контекст для ИИ"""
         result = f"Локация: {game.location.name}"
 
+        # Добавляет списки сущностей, необходимых для ИИ
         if "npcs" in self.required:
             result += ", ".join([str(npc) for npc in game.location.npcs])
 

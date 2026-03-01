@@ -21,36 +21,45 @@ class GameSession:
         self.game.player = Player()
         self.game.location = Tavern()
 
+        # Пока что просто возвращаем описание локации
         return [self.game.location.desc], self.game.location.get_state().get_btns_menu()
 
     def process(self, text: str) -> tuple[list[str], list[list[str]]]:
         """Обработчик сообщения полььзователя"""
         if text in self.game.location.available_btns():
+            # Если нажата кнопка
             result = self.game.location.perform(text, self.game)
         else:
+            # Если свободный ввод
             action, params = self.__extract_action(text)
+            # Обработка неизвестной команды
             if action is None:
                 return ["Unknown action"], self.game.location.get_state().get_btns_menu()
             result = action.execute(self.game, params)
+            # Добавляем ответ на ИИ
             summery = self.__get_summery(text, result.story)
-            #result.messages.clear()
             result.messages.append(summery)
 
         return result.messages, self.game.location.get_state().get_btns_menu()
 
     def __extract_action(self, text: str) -> tuple[Action | None, dict]:
-        """Свободный ввод"""
+        """Извлекает действие и его параметры из текста игрока"""
+        # Извлечение имя действия
         raw_response = self.__ai.parse_action(text, self.game.location.available_actions())
         action_id = self.__pr.preprocess(raw_response)["action"]
 
+        # Если действие не известно
         if action_id not in self.game.location.available_actions():
             return None, {}
 
+        # Получаем объект действия
         action = self.game.location.get_state().actions[action_id]
 
+        # Если у действия нет параметров, то возвращаем пустой словарь
         if len(action.params) == 0:
             return action, {}
 
+        # Извлечение параметров действия
         raw_response = self.__ai.parse_params(text, action, self.game)
         params = self.__pr.preprocess(raw_response)
 

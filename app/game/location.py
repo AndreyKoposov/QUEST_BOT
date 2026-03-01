@@ -40,16 +40,10 @@ class Location:
 
     def change_state(self, game: GameState, state_id: str, params: dict) -> ActionResult:
         """Сменяет состояние локации на новое"""
-        messages = list[str]()
-        story = list[str]()
+        res = ActionResult()
 
-        result_1 = self.get_state().on_exit(game, params)
+        res += self.get_state().on_exit(game, params)
         self.state = state_id
-        result_2 = self.get_state().on_enter(game, params)
+        res += self.get_state().on_enter(game, params)
 
-        messages += result_1.messages
-        messages += result_2.messages
-        story += result_1.story
-        story += result_2.story
-
-        return ActionResult(messages, story)
+        return res

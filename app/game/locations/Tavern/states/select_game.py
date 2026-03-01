@@ -20,28 +20,18 @@ class SelectGame(State):
     #region Actions
     @staticmethod
     def cards_action_handler(game: GameState, params: dict) -> ActionResult:
-        """Обработчик действия игры"""
-        messages = ["Вы решили сыграть в карты. Сколько ставим?"]
-
-        game.location.change_state(game, "cards_start", params)
-
-        return ActionResult(messages, [])
+        """Обработчик действия игры в карты"""
+        return game.location.change_state(game, "cards_start", params)
     @staticmethod
     def dice_action_handler(game: GameState, params: dict) -> ActionResult:
-        """Обработчик действия игры"""
-        messages = ["Вы решили сыграть в кости. Сколько ставим?"]
-
-        game.location.change_state(game, "dice_start", params)
-
-        return ActionResult(messages, [])
+        """Обработчик действия игры в кости"""
+        return game.location.change_state(game, "dice_start", params)
     @staticmethod
     def leave_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия отмены"""
-        messages = ["Вы решили, что вам сегодня не до игр."]
+        res = ActionResult(["Вы решили, что вам сегодня не до игр."])
 
-        game.location.change_state(game, "enter", params)
-
-        return ActionResult(messages, [])
+        return res + game.location.change_state(game, "enter", params)
     #endregion
     #region Buttons
     @staticmethod
@@ -73,7 +63,7 @@ class SelectGame(State):
         return [[self.cards_btn, self.dice_btn], [self.leave_btn]]
 
     def on_enter(self, game: GameState, params: dict) -> ActionResult:
-        return ActionResult([], [])
+        return ActionResult(["Вы сели за ближайший стол. Во что будеи играть?"])
 
     def on_exit(self, game: GameState, params: dict) -> ActionResult:
-        return ActionResult([], [])
+        return ActionResult()

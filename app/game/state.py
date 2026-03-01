@@ -16,7 +16,7 @@ class State:
 
     @abstractmethod
     def get_btns_menu(self) -> list[list[str]]:
-        """Возвращает структурированный список кнопок"""
+        """Возвращает структурированный по столбцам и строкам список кнопок"""
 
     @abstractmethod
     def on_enter(self, game: GameState, params: dict) -> ActionResult:

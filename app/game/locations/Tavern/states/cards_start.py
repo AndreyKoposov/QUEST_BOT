@@ -21,47 +21,51 @@ class CardsStart(State):
     @staticmethod
     def start_game_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры"""
+        res = ActionResult()
+
+        # Атрибуты игры в карты
         bet = params.get("bet", 0)
         player_score = randint(1, 11)
         enemy_score = randint(1, 11)
         enemy_stoped = False
 
-        messages = [f"Вы решили поставить {bet} монет. Начнём!"]
-        messages.append(f"Вы вытянули карту: {player_score} очков!")
+        res.add_msg(f"Вы решили поставить {bet} монет. Начнём!\
+                    \nВы вытянули карту: {player_score} очков!")
 
-        game.location.context["game"]["bet"] = bet
-        game.location.context["game"]["player_score"] = player_score
-        game.location.context["game"]["enemy_score"] = enemy_score
-        game.location.context["game"]["enemy_stoped"] = enemy_stoped
+        res.add_line(f"Игрок поставил на кон {bet} монет.")
+        res.add_line(f"Игрок начал играть и вытянул карту стоимостью {player_score} очков.")
+        res.add_line("Противник тоже взял карту.")
 
-        game.location.change_state(game, "cards_play", params)
+        # Передаем как параметры следующего состояния
+        params["bet"] = bet
+        params["player_score"] = player_score
+        params["enemy_score"] = enemy_score
+        params["enemy_stoped"] = enemy_stoped
 
-        return ActionResult(messages, [])
+        return res + game.location.change_state(game, "cards_play", params)
     @staticmethod
     def leave_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик отмены игры"""
-        messages = ["Вы решили, что не хотите сейчас играть"]
+        res = ActionResult(["Вы решили, что не хотите сейчас играть"])
 
-        game.location.change_state(game, "enter", params)
-
-        return ActionResult(messages, [])
+        return res + game.location.change_state(game, "enter", params)
     #endregion
     #region Buttons
     @staticmethod
     def no_bet_btn_handler(game: GameState) -> ActionResult:
-        """Обработчик кнопки игры"""
+        """Обработчик кнопки игры без ставки"""
         return CardsStart.start_game_action_handler(game, {})
     @staticmethod
     def small_bet_btn_handler(game: GameState) -> ActionResult:
-        """Обработчик кнопки игры"""
+        """Обработчик кнопки игры с маленькой ставкой"""
         return CardsStart.start_game_action_handler(game, {"bet": 5})
     @staticmethod
     def big_bet_btn_handler(game: GameState) -> ActionResult:
-        """Обработчик кнопки игры"""
+        """Обработчик кнопки игры с большой ставкой"""
         return CardsStart.start_game_action_handler(game, {"bet": 20})
     @staticmethod
     def leave_btn_handler(game: GameState) -> ActionResult:
-        """Обработчик кнопки игры"""
+        """Обработчик кнопки отмены"""
         return CardsStart.leave_action_handler(game, {})
     #endregion
 
@@ -80,11 +84,12 @@ class CardsStart(State):
         return [[self.no_bet_btn, self.small_bet_btn, self.big_bet_btn], [self.leave_btn]]
 
     def on_enter(self, game: GameState, params: dict) -> ActionResult:
+        # Если ставка уже указана, то запускаем игру сразу
         bet = params.get("bet", None)
         if bet is not None:
             return self.start_game_action_handler(game, params)
 
-        return ActionResult([], [])
+        return ActionResult(["Вы решили сыграть в карты. На что играем?"])
 
     def on_exit(self, game: GameState, params: dict) -> ActionResult:
-        return ActionResult([], [])
+        return ActionResult()

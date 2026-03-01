@@ -8,6 +8,11 @@ class CardsPlay(State):
     """Игра в карты"""
     id = "cards_play"
 
+    bet: int # Ставка
+    p_score: int # Очки игрока
+    e_score: int # Очки противника
+    e_stoped: bool # Противник пасанул?
+
     #region Aliases
     take_btn = "🃏 Ещё"
     stop_btn = "❌ Пас"
@@ -18,82 +23,31 @@ class CardsPlay(State):
     #region Actions
     @staticmethod
     def take_action_handler(game: GameState, params: dict) -> ActionResult:
-        """Обработчик действия игры"""
-        player_score = game.location.context["game"]["player_score"]
-        enemy_score = game.location.context["game"]["enemy_score"]
-        enemy_stoped = game.location.context["game"].get("enemy_stoped", False)
-        messages = []
+        """Обработчик действия взятия карты"""
+        res = ActionResult()
 
-        player_score += randint(1, 11)
-        messages = [f"Вы взяли еще карту. Теперь ваш счет составляет: {player_score}"]
+        # Игрок берет карту
+        CardsPlay.p_score += randint(1, 11)
+        res.add_msg(f"Вы взяли еще карту. Теперь ваш счет составляет: {CardsPlay.p_score}")
 
-        if not enemy_stoped:
-            if 11 < enemy_score < randint(1, 21) < 22:
-                enemy_stoped = True
-                messages.append("Противник пасует")
-            else:
-                enemy_score += randint(1, 11)
-                messages.append("Противник берет еще")
+        # Если противник еще не пасанул, то он делает ход
+        if not CardsPlay.e_stoped:
+            res += CardsPlay.__enemy_turn()
 
-        game.location.context["game"]["player_score"] = player_score
-        game.location.context["game"]["enemy_score"] = enemy_score
-        game.location.context["game"]["enemy_stoped"] = enemy_stoped
+        # Если игрок перевалил за 21 очко, то он больше не ходит
+        if CardsPlay.p_score > 21:
+            res += CardsPlay.__end_game(game)
+            return res + game.location.change_state(game, "cards_start", params)
 
-        if player_score < 22:
-            return ActionResult(messages, [])
-
-        while not enemy_stoped and enemy_score <= 21:
-            if 11 < enemy_score < randint(1, 21) < 22:
-                enemy_stoped = True
-                messages.append("Противник пасует")
-            else:
-                enemy_score += randint(1, 11)
-                messages.append("Противник берет еще")
-
-        if player_score > 21 and enemy_score > 21 or player_score == enemy_score:
-            messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nНичья!")
-        elif player_score > 21:
-            messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПроигрыш!")
-        elif enemy_score > 21:
-            messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПобеда!")
-        elif enemy_score > player_score:
-            messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПроигрыш!")
-        else:
-            messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПобеда!")
-
-        game.location.change_state(game, "cards_start", params)
-        return ActionResult(messages, [])
+        return res
     @staticmethod
     def stop_action_handler(game: GameState, params: dict) -> ActionResult:
-        """Обработчик действия игры"""
-        player_score = game.location.context["game"]["player_score"]
-        enemy_score = game.location.context["game"]["enemy_score"]
-        enemy_stoped = game.location.context["game"].get("enemy_stoped", False)
-        messages = []
+        """Обработчик действия паса"""
+        res = ActionResult()
+        res.add_msg("Вы решили больше не брать карту")
+        res += CardsPlay.__end_game(game)
 
-        messages = ["Вы решили больше не брать карту"]
-
-        while not enemy_stoped and enemy_score <= 21:
-            if 11 < enemy_score < randint(1, 21) < 22:
-                enemy_stoped = True
-                messages.append("Противник пасует")
-            else:
-                enemy_score += randint(1, 11)
-                messages.append("Противник берет еще")
-
-        if player_score > 21 and enemy_score > 21 or player_score == enemy_score:
-            messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nНичья!")
-        elif player_score > 21:
-            messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПроигрыш!")
-        elif enemy_score > 21:
-            messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПобеда!")
-        elif enemy_score > player_score:
-            messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПроигрыш!")
-        else:
-            messages.append(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПобеда!")
-
-        game.location.change_state(game, "cards_start", params)
-        return ActionResult(messages, [])
+        return res + game.location.change_state(game, "cards_start", params)
     #endregion
     #region Buttons
     @staticmethod
@@ -119,7 +73,52 @@ class CardsPlay(State):
         return [[self.take_btn, self.stop_btn]]
 
     def on_enter(self, game: GameState, params: dict) -> ActionResult:
-        return ActionResult([], [])
+        CardsPlay.bet = params["bet"]
+        CardsPlay.p_score = params["player_score"]
+        CardsPlay.e_score = params["enemy_score"]
+        CardsPlay.e_stoped = params["enemy_stoped"]
+
+        return ActionResult()
 
     def on_exit(self, game: GameState, params: dict) -> ActionResult:
-        return ActionResult([], [])
+        return ActionResult()
+
+    @staticmethod
+    def __end_game(game: GameState):
+        res = ActionResult()
+
+        # Просто для удобства
+        player_score = CardsPlay.p_score
+        enemy_score = CardsPlay.e_score
+
+        # Противник ходит, пока не перевалил за 21 или не пасанет
+        while not CardsPlay.e_stoped:
+            CardsPlay.__enemy_turn()
+
+        # Определение исхода игры
+        if player_score > 21 and enemy_score > 21 or player_score == enemy_score:
+            res.add_msg(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nНичья!")
+        elif player_score > 21:
+            res.add_msg(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПроигрыш!")
+        elif enemy_score > 21:
+            res.add_msg(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПобеда!")
+        elif enemy_score > player_score:
+            res.add_msg(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПроигрыш!")
+        else:
+            res.add_msg(f"\nВаш счет {player_score}\nСчет противника {enemy_score}\nПобеда!")
+
+        return res
+
+    @staticmethod
+    def __enemy_turn() -> ActionResult:
+        res = ActionResult()
+
+        # Чем больше у противника очков, тем выше шанс, что он пасанет
+        if 11 < CardsPlay.e_score < randint(1, 21) < 22 or CardsPlay.e_score >= 21:
+            CardsPlay.e_stoped = True
+            res.add_msg("Противник пасует")
+        else:
+            CardsPlay.e_score += randint(1, 11)
+            res.add_msg("Противник берет еще")
+
+        return res

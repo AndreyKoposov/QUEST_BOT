@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 class GigaAI():
-    """Класс для работы с gigachat api"""
+    """Класс для работы с Gigachat API"""
     def __init__(self, auth: str, temp: float = 0.0):
         self.giga = GigaChat(
             credentials=auth,
@@ -17,7 +17,7 @@ class GigaAI():
             verify_ssl_certs=False,
             temperature=temp,
             scope="GIGACHAT_API_PERS",
-            timeout=15
+            timeout=30
         )
 
     def parse_action(self, player_input: str, actions: list[str]):
@@ -39,7 +39,6 @@ class GigaAI():
 - Не придумывай действия, которых нет в списке. Выбирай наиболее подходящее.
 - Ответ должен содержать ТОЛЬКО JSON, без пояснений.
 """
-        print(query)
         res = self.giga.invoke(query).content
 
         if isinstance(res, str):
@@ -75,7 +74,6 @@ class GigaAI():
 Верни только строго валидный JSON по этой схеме:
 """ + action.get_template()
 
-        print(query)
         res = self.giga.invoke(query).content
 
         if isinstance(res, str):
@@ -98,5 +96,11 @@ class GigaAI():
 Интересно и в стиле фэнтэзи опиши произошедшие события и их последствия (2-3 предложения). Обращайся к игроку на Вы.
 Не говори в тексте про очки здоровья и прочие игровые параметры, тебе нужно лишь красиво их интерпретировать.
 """
-        print(query)
-        return str(self.giga.invoke(query).content)
+        res = self.giga.invoke(query).content
+
+        if isinstance(res, str):
+            Logger.info(f"AI response:\n{res}")
+            return res
+
+        Logger.error(f"Bad AI answer:\n{res}")
+        return ""

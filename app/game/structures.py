@@ -8,12 +8,30 @@ if TYPE_CHECKING:
 
 class ActionResult():
     """Результат выполнения действия"""
-    def __init__(self,
-                 messages: list[str],
-                 story: list[str]) -> None:
+    def __init__(self, messages: list[str] | None = None,
+                 story: list[str] | None = None) -> None:
 
-        self.messages = messages
-        self.story = story
+        # Сообщения для игрока
+        self.messages = messages if messages else list[str]()
+        # Сводка для ИИ
+        self.story = story if story else list[str]()
+
+    def add_msg(self, msg: str):
+        """Добавляет новое сообщение для игрока"""
+        self.messages.append(msg)
+
+    def add_line(self, line: str):
+        """Добавляет новую запись в сводку для ИИ"""
+        self.story.append(line)
+
+    def __add__(self, other):
+        if isinstance(other, ActionResult):
+            messages = self.messages + other.messages
+            story = self.story + other.story
+
+            return ActionResult(messages, story)
+
+        raise TypeError
 
 class GlobalContext():
     """Глобальный контекст игры"""

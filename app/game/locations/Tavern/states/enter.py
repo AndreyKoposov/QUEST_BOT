@@ -16,20 +16,22 @@ class Enter(State):
     @staticmethod
     def play_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры"""
-        messages = []
+        res = ActionResult()
+        res.add_line("Игрок решил поиграть в настольные игры")
+
         game_name = params.get("game_name", None)
         if game_name:
+            # Если игрок сразу указал игру, то запускаем её
             if game_name == "карты":
                 return game.location.change_state(game, "cards_start", params)
-            elif game_name == "кубики":
+            if game_name == "кубики":
                 return game.location.change_state(game, "dice_start", params)
-            else:
-                messages.append("Никто не понял, в какую игру вы хотите сыграть")
-        else:
-            messages = ["Вы сели за ближайший стол. Во что будем играть?"]
-        game.location.change_state(game, "select_game", params)
+            res.add_line("Никто не понял, в какую именно игру игрок хочет сыграть")
 
-        return ActionResult(messages, [])
+        # Если нет, то переходим в меню выбора игры
+        res += game.location.change_state(game, "select_game", params)
+
+        return res
     #endregion
     #region Buttons
     @staticmethod
@@ -53,7 +55,7 @@ class Enter(State):
         return [[self.play_btn]]
 
     def on_enter(self, game: GameState, params: dict) -> ActionResult:
-        return ActionResult([], [])
+        return ActionResult(["Вы стоите в зале уютной таверны"])
 
     def on_exit(self, game: GameState, params: dict) -> ActionResult:
-        return ActionResult([], [])
+        return ActionResult()

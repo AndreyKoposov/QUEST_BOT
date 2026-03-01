@@ -25,7 +25,7 @@ dp = Dispatcher()
 router = Router()
 dp.include_router(router)
 
-
+# Игровые сессии
 sessions = dict[int, GameSession]()
 
 @dp.message(Command('start'))
@@ -36,6 +36,8 @@ async def cmd_start(message: Message):
 
     await message.reply("Привет! Это текстовая RPG игра с участием ИИ.")
     user_id = message.from_user.id
+
+    # Если у игрока еще нет сессии, создаем новую
     if user_id not in sessions:
         sessions[user_id] = GameSession(ai)
 
