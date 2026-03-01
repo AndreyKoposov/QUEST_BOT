@@ -2,6 +2,7 @@ from app.game.structures import ActionResult
 from app.game.action import Action
 from app.game.state import State
 from app.game.structures import GameState
+from .states_id import StateID
 
 
 class SelectGame(State):
@@ -21,7 +22,7 @@ class SelectGame(State):
     @staticmethod
     def cards_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры в карты"""
-        return game.location.change_state(game, "cards_start", params)
+        return game.location.change_state(game, StateID.CARDS_START, params)
     @staticmethod
     def dice_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик действия игры в кости"""
@@ -31,7 +32,7 @@ class SelectGame(State):
         """Обработчик действия отмены"""
         res = ActionResult(["Вы решили, что вам сегодня не до игр."])
 
-        return res + game.location.change_state(game, "enter", params)
+        return res + game.location.change_state(game, StateID.ENTER, params)
     #endregion
     #region Buttons
     @staticmethod
@@ -59,11 +60,15 @@ class SelectGame(State):
         leave_btn: leave_btn_handler
     }
 
-    def get_btns_menu(self) -> list[list[str]]:
-        return [[self.cards_btn, self.dice_btn], [self.leave_btn]]
+    @staticmethod
+    def get_btns_menu() -> list[list[str]]:
+        return [[SelectGame.cards_btn, SelectGame.dice_btn],
+                [SelectGame.leave_btn]]
 
-    def on_enter(self, game: GameState, params: dict) -> ActionResult:
+    @staticmethod
+    def on_enter(game: GameState, params: dict) -> ActionResult:
         return ActionResult(["Вы сели за ближайший стол. Во что будеи играть?"])
 
-    def on_exit(self, game: GameState, params: dict) -> ActionResult:
+    @staticmethod
+    def on_exit(game: GameState, params: dict) -> ActionResult:
         return ActionResult()

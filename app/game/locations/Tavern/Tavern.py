@@ -6,17 +6,17 @@ class Tavern(Location):
     """Класс таверны"""
     id = "tavern"
     name = "Таверна"
-    desc = "Уютная таверна"
+    desc = "Уютная таверна, где полно народу и играет музыка"
 
     state = "enter"
-    states = []
+    states = {}
     context = {
         "game": {},
         "talk": {}
     }
 
-    def __init__(self) -> None:
-        self.states.append(Enter())
-        self.states.append(SelectGame())
-        self.states.append(CardsStart())
-        self.states.append(CardsPlay())
+    def __init__(self):
+        self.states[Enter.id] = Enter()
+        self.states[SelectGame.id] = SelectGame()
+        self.states[CardsStart.id] = CardsStart()
+        self.states[CardsPlay.id] = CardsPlay()

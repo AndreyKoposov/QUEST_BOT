@@ -14,14 +14,17 @@ class State:
     actions: dict[str, Action]
     buttons: dict[str, Callable]
 
+    @staticmethod
     @abstractmethod
-    def get_btns_menu(self) -> list[list[str]]:
+    def get_btns_menu() -> list[list[str]]:
         """Возвращает структурированный по столбцам и строкам список кнопок"""
 
+    @staticmethod
     @abstractmethod
-    def on_enter(self, game: GameState, params: dict) -> ActionResult:
+    def on_enter(game: GameState, params: dict) -> ActionResult:
         """Вызывается при входе в состояние"""
 
+    @staticmethod
     @abstractmethod
-    def on_exit(self, game: GameState, params: dict) -> ActionResult:
+    def on_exit(game: GameState, params: dict) -> ActionResult:
         """Вызывается при выходе из состояния"""

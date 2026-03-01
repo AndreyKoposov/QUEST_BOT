@@ -1,11 +1,12 @@
 from app.game.action import Action
 from app.game.state import State
 from app.game.structures import GameState, ActionResult
+from .states_id import StateID
 
 
 class Enter(State):
     """Начальное состояние в таверне"""
-    id = "enter"
+    id = StateID.ENTER
 
     #region Aliases
     play_btn = "🎲 Играть"
@@ -23,13 +24,13 @@ class Enter(State):
         if game_name:
             # Если игрок сразу указал игру, то запускаем её
             if game_name == "карты":
-                return game.location.change_state(game, "cards_start", params)
+                return game.location.change_state(game, StateID.CARDS_START, params)
             if game_name == "кубики":
                 return game.location.change_state(game, "dice_start", params)
             res.add_line("Никто не понял, в какую именно игру игрок хочет сыграть")
 
         # Если нет, то переходим в меню выбора игры
-        res += game.location.change_state(game, "select_game", params)
+        res += game.location.change_state(game, StateID.SELECT_GAME, params)
 
         return res
     #endregion
@@ -51,11 +52,14 @@ class Enter(State):
         play_btn: play_btn_handler
     }
 
-    def get_btns_menu(self) -> list[list[str]]:
-        return [[self.play_btn]]
+    @staticmethod
+    def get_btns_menu() -> list[list[str]]:
+        return [[Enter.play_btn]]
 
-    def on_enter(self, game: GameState, params: dict) -> ActionResult:
+    @staticmethod
+    def on_enter(game: GameState, params: dict) -> ActionResult:
         return ActionResult(["Вы стоите в зале уютной таверны"])
 
-    def on_exit(self, game: GameState, params: dict) -> ActionResult:
+    @staticmethod
+    def on_exit(game: GameState, params: dict) -> ActionResult:
         return ActionResult()

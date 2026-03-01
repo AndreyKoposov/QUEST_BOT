@@ -2,6 +2,7 @@ from random import randint
 from app.game.action import Action
 from app.game.state import State
 from app.game.structures import GameState, ActionResult
+from .states_id import StateID
 
 
 class CardsStart(State):
@@ -42,13 +43,13 @@ class CardsStart(State):
         params["enemy_score"] = enemy_score
         params["enemy_stoped"] = enemy_stoped
 
-        return res + game.location.change_state(game, "cards_play", params)
+        return res + game.location.change_state(game, StateID.CARDS_PLAY, params)
     @staticmethod
     def leave_action_handler(game: GameState, params: dict) -> ActionResult:
         """Обработчик отмены игры"""
         res = ActionResult(["Вы решили, что не хотите сейчас играть"])
 
-        return res + game.location.change_state(game, "enter", params)
+        return res + game.location.change_state(game, StateID.ENTER, params)
     #endregion
     #region Buttons
     @staticmethod
@@ -80,16 +81,20 @@ class CardsStart(State):
         leave_btn: leave_btn_handler
     }
 
-    def get_btns_menu(self) -> list[list[str]]:
-        return [[self.no_bet_btn, self.small_bet_btn, self.big_bet_btn], [self.leave_btn]]
+    @staticmethod
+    def get_btns_menu() -> list[list[str]]:
+        return [[CardsStart.no_bet_btn, CardsStart.small_bet_btn, CardsStart.big_bet_btn],
+                [CardsStart.leave_btn]]
 
-    def on_enter(self, game: GameState, params: dict) -> ActionResult:
+    @staticmethod
+    def on_enter(game: GameState, params: dict) -> ActionResult:
         # Если ставка уже указана, то запускаем игру сразу
         bet = params.get("bet", None)
         if bet is not None:
-            return self.start_game_action_handler(game, params)
+            return CardsStart.start_game_action_handler(game, params)
 
         return ActionResult(["Вы решили сыграть в карты. На что играем?"])
 
-    def on_exit(self, game: GameState, params: dict) -> ActionResult:
+    @staticmethod
+    def on_exit(game: GameState, params: dict) -> ActionResult:
         return ActionResult()

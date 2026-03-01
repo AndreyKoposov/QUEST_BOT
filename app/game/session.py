@@ -36,7 +36,7 @@ class GameSession:
             if action is None:
                 return ["Unknown action"], self.game.location.get_state().get_btns_menu()
             result = action.execute(self.game, params)
-            # Добавляем ответ на ИИ
+            # Добавляем ответ от ИИ
             summery = self.__get_summery(text, result.story)
             result.messages.append(summery)
 

@@ -2,6 +2,7 @@ from random import randint
 from app.game.structures import ActionResult, GameState
 from app.game.action import Action
 from app.game.state import State
+from .states_id import StateID
 
 
 class CardsPlay(State):
@@ -11,7 +12,7 @@ class CardsPlay(State):
     bet: int # Ставка
     p_score: int # Очки игрока
     e_score: int # Очки противника
-    e_stoped: bool # Противник пасанул?
+    e_stoped: bool # Противник пас?
 
     #region Aliases
     take_btn = "🃏 Ещё"
@@ -37,7 +38,7 @@ class CardsPlay(State):
         # Если игрок перевалил за 21 очко, то он больше не ходит
         if CardsPlay.p_score > 21:
             res += CardsPlay.__end_game(game)
-            return res + game.location.change_state(game, "cards_start", params)
+            return res + game.location.change_state(game, StateID.CARDS_START, params)
 
         return res
     @staticmethod
@@ -47,7 +48,7 @@ class CardsPlay(State):
         res.add_msg("Вы решили больше не брать карту")
         res += CardsPlay.__end_game(game)
 
-        return res + game.location.change_state(game, "cards_start", params)
+        return res + game.location.change_state(game, StateID.CARDS_START, params)
     #endregion
     #region Buttons
     @staticmethod
@@ -69,10 +70,12 @@ class CardsPlay(State):
         stop_btn: stop_btn_handler
     }
 
-    def get_btns_menu(self) -> list[list[str]]:
-        return [[self.take_btn, self.stop_btn]]
+    @staticmethod
+    def get_btns_menu() -> list[list[str]]:
+        return [[CardsPlay.take_btn, CardsPlay.stop_btn]]
 
-    def on_enter(self, game: GameState, params: dict) -> ActionResult:
+    @staticmethod
+    def on_enter(game: GameState, params: dict) -> ActionResult:
         CardsPlay.bet = params["bet"]
         CardsPlay.p_score = params["player_score"]
         CardsPlay.e_score = params["enemy_score"]
@@ -80,7 +83,8 @@ class CardsPlay(State):
 
         return ActionResult()
 
-    def on_exit(self, game: GameState, params: dict) -> ActionResult:
+    @staticmethod
+    def on_exit(game: GameState, params: dict) -> ActionResult:
         return ActionResult()
 
     @staticmethod
@@ -91,7 +95,7 @@ class CardsPlay(State):
         player_score = CardsPlay.p_score
         enemy_score = CardsPlay.e_score
 
-        # Противник ходит, пока не перевалил за 21 или не пасанет
+        # Противник ходит, пока не пасанет
         while not CardsPlay.e_stoped:
             CardsPlay.__enemy_turn()
 

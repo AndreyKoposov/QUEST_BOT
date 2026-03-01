@@ -14,7 +14,7 @@ class Location:
     desc: str
 
     state: str
-    states: list[State]
+    states: dict[str, State]
     context: dict
 
     npcs: list[str]
@@ -36,7 +36,7 @@ class Location:
 
     def get_state(self) -> State:
         """Возвращает текущее состояния"""
-        return next(filter(lambda s: s.id == self.state, self.states))
+        return self.states[self.state]
 
     def change_state(self, game: GameState, state_id: str, params: dict) -> ActionResult:
         """Сменяет состояние локации на новое"""
