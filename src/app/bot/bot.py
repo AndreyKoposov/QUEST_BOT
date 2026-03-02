@@ -1,26 +1,19 @@
 """aiogram, os, dotenv, app"""
-from os import getenv
-from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton
 from app.ai.giga import GigaAI
 from app.utils.logger import Logger
 from app.game.session import GameSession
+from app.config import ENV
 
-
-# Переменные окружения
-load_dotenv()
-ROOT = str(getenv('ROOT'))
-TOKEN = str(getenv('BOT_TOKEN'))
-AUTH = str(getenv('AI_AUTH'))
 
 # Вспомогательные классы
-ai = GigaAI(AUTH)
-Logger.start(ROOT)
+ai = GigaAI(ENV.AI_API_KEY.get_secret_value())
+Logger.start()
 
 # Настройка бота
-bot = Bot(token=TOKEN)
+bot = Bot(token=ENV.BOT_TOKEN.get_secret_value())
 dp = Dispatcher()
 router = Router()
 dp.include_router(router)
@@ -72,5 +65,6 @@ def create_menu(options: list[list[str]]) -> ReplyKeyboardMarkup:
     return keyboard
 
 
-if __name__ == '__main__':
+def run():
+    """Запуск бота"""
     dp.run_polling(bot)

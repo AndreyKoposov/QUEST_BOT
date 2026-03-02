@@ -1,6 +1,7 @@
 """logging"""
 from logging import getLogger, DEBUG, Formatter
 from logging.handlers import RotatingFileHandler
+from app.config import ROOT, ENV
 
 
 class Logger():
@@ -8,7 +9,7 @@ class Logger():
     logger = getLogger(__name__)
 
     @staticmethod
-    def start(path: str) -> None:
+    def start() -> None:
         """Запускает работу логгера"""
         Logger.logger.setLevel(DEBUG)
 
@@ -17,7 +18,7 @@ class Logger():
             datefmt='%Y-%m-%d %H:%M:%S'
         )
         file_handler = RotatingFileHandler(
-            path + 'logs\\app.log',
+            ROOT/'logs\\app.log',
             maxBytes=1024*1024,
             encoding='utf-8'
         )
@@ -30,7 +31,8 @@ class Logger():
     @staticmethod
     def info(msg):
         """Log info message"""
-        Logger.logger.info(msg)
+        if ENV.DEBUG:
+            Logger.logger.info(msg)
 
     @staticmethod
     def error(msg):
