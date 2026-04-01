@@ -1,0 +1,53 @@
+scene_id:
+  meta:
+    name: Имя сцены
+    image: path/to/image.jpg
+
+  # Необходимые компоненты бизнес-логики
+  components:
+    - id: component_id
+      args:
+        arg: value
+
+  # Кнопки
+  buttons:
+    - id: btn_id
+      text: ❌ Текст
+      calls:
+        - id: handler_or_action_id
+          params:
+            param: value
+
+  # Меню кнопок
+  menu:
+    - [btn_id]
+    - [btn_id, btn_id]
+    - [btn_id]
+  
+  # Действия
+  actions:
+    - id: отменить выбор игры
+      ai: Игрок хочет отменить выбор игры
+      calls:
+        - id: handler_id_1
+          params:
+            param: value
+  
+  # Входные параметры
+  input: [param_name_1,]
+  # Внутреннее состояние
+  state: [param_name_1,]
+  # Выходные параметры
+  output: [param_name_1,]
+
+  # Переходы
+  transitions:
+    - trigger: param_name <> value
+      target_state: scene_id
+  
+  # Динамическое описание
+  description: |
+    Текст для отправки пользователю
+    {% if var > x %}
+    Условный текст
+    {% endif %}
