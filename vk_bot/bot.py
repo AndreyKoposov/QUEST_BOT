@@ -1,24 +1,17 @@
-from vkbottle import PhotoMessageUploader, Keyboard, Text
+from vkbottle import PhotoMessageUploader, Keyboard, Text, LoopWrapper
 from vkbottle.bot import Bot, Message
-from vkbottle.dispatch import BaseStateGroup
-from vkbottle.dispatch.rules.base import StateRule
-from vkbottle.dispatch.handlers import MessageReplyHandler
-from vkbottle.dispatch.dispenser import ABCStateDispenser
-from vkbottle.dispatch import BuiltinStateDispenser
 
 from vk_bot.config import VK_TOKEN, BASE_DIR, MONGO_USER, MONGO_PSWRD, MONGO_HOST, MONGO_PORT, MONGO_DB
+from vk_bot.redis_dispenser import RedisStateDispenser
+from vk_bot.states import States
 from core.game.session import GameSession
 from mongo.db import MongoDB
+from redis_storage.db import RedisDB
 
 
+redis = RedisDB()
 bot = Bot(token=VK_TOKEN)
-bot.state_dispenser = BuiltinStateDispenser()
 photo_uploader = PhotoMessageUploader(bot.api)
-
-class States(BaseStateGroup):
-    WAIT_NAME = 0
-    WAIT_INPUT = 1
-    BLOCKED = 2
 
 @bot.on.message(text='/create_character')
 async def create_handler(message: Message):
@@ -55,12 +48,12 @@ async def blocked_handler(message: Message):
     await message.answer('Ваше сообщение обрабатывается, подождите!')
 
 async def create_user(name: str):
-    db = MongoDB()
+    mongo = MongoDB()
     try:
         # Подключаемся
-        await db.connect(MONGO_USER, MONGO_PSWRD, MONGO_HOST, MONGO_PORT, MONGO_DB)
+        await mongo.connect(MONGO_USER, MONGO_PSWRD, MONGO_HOST, MONGO_PORT, MONGO_DB)
         # Получаем коллекцию
-        users = await db.get_collection("users")
+        users = await mongo.get_collection("users")
         # Пример вставки
         result = await users.insert_one({
             "name": name,
@@ -70,7 +63,7 @@ async def create_user(name: str):
         user = await users.find_one({"name": name})
         print(f"Найден пользователь: {user}")
         # Закрываем соединение
-        await db.disconnect()
+        await mongo.disconnect()
     except Exception as e:
         print(f"Ошибка: {e}")
 
@@ -82,5 +75,26 @@ def build_keyboard(btns: list[list[str]]) -> str:
         kb.row()
     return kb.get_json()
 
+async def startup_task():
+    await redis.connect('1234')
+    if redis.client:
+        bot.state_dispenser = RedisStateDispenser(redis.client)
+
+async def shutdown_task():
+    await redis.disconnect()
+
+async def bot_task():
+    await bot.run_polling()
+
+lw = LoopWrapper()
+lw.on_startup.append(startup_task())
+lw.add_task(bot_task())
+lw.on_shutdown.append(shutdown_task())
+bot.loop_wrapper = lw
+
 def run():
-    bot.run_forever()
+    print("Bot started...")
+    try:
+        lw.run()
+    except KeyboardInterrupt:
+        print("Bot stoped")

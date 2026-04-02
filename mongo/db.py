@@ -2,7 +2,7 @@ from typing import Optional
 from motor.motor_asyncio import AsyncIOMotorClient
 
 
-class MongoDB:  
+class MongoDB():
     def __init__(self):
         self.client: Optional[AsyncIOMotorClient] = None
         self.db = None

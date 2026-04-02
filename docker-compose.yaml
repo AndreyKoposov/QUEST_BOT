@@ -1,6 +1,7 @@
 services:
   mongo:
     image: mongo:latest
+    restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PSWRD}
@@ -12,10 +13,30 @@ services:
     networks:
       - app_network
 
+  redis:
+    image: redis:latest
+    restart: always
+    # environment:
+    #   - REDIS_PASSWORD=${REDIS_PSWRD}
+    #   - REDIS_USER=${REDIS_USER}
+    #   - REDIS_USER_PASSWORD=${REDIS_USER_PSWRD}
+    command: ["redis-server", "--requirepass", "${REDIS_PSWRD}", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - quest_redis:/data
+    networks:
+      - app_network
+
 volumes:
   quest_mongo:
     name: 
       quest_mongo
+    driver: local
+  quest_redis:
+    name: 
+      quest_redis
+    driver: local
 
 networks:
   app_network:
