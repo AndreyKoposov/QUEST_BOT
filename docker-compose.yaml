@@ -16,10 +16,6 @@ services:
   redis:
     image: redis:latest
     restart: always
-    # environment:
-    #   - REDIS_PASSWORD=${REDIS_PSWRD}
-    #   - REDIS_USER=${REDIS_USER}
-    #   - REDIS_USER_PASSWORD=${REDIS_USER_PSWRD}
     command: ["redis-server", "--requirepass", "${REDIS_PSWRD}", "--appendonly", "yes"]
     ports:
       - "${REDIS_PORT}:6379"

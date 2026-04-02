@@ -9,13 +9,10 @@ class MongoDB():
 
     async def connect(self, user: str, pswrd: str, host: str, port: int, db: str):
         """Подключение к MongoDB"""
-        # Строка подключения
         connection_string = f"mongodb://{user}:{pswrd}@{host}:{port}"
 
-        # Создаем клиент
         self.client = AsyncIOMotorClient(connection_string)
 
-        # Проверяем подключение
         try:
             await self.client.admin.command('ping')
             print("✅ Успешно подключились к MongoDB")
@@ -23,7 +20,6 @@ class MongoDB():
             print(f"❌ Ошибка подключения: {e}")
             raise
 
-        # Выбираем базу данных
         self.db = self.client.get_database(db)
         return self.db
 
@@ -36,5 +32,5 @@ class MongoDB():
     async def get_collection(self, name: str):
         """Получение коллекции"""
         if self.db is None:
-            raise Exception("Сначала нужно подключиться к БД")
+            raise ConnectionError("Сначала нужно подключиться к БД")
         return self.db[name]

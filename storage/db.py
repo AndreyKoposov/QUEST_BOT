@@ -8,15 +8,14 @@ class RedisDB():
     def __init__(self):
         self.client: Optional[redis.Redis] = None
 
-    async def connect(self, password: str):
+    async def connect(self, port: int, password: str) -> redis.Redis:
         """Подключение к Redis"""
         self.client = await redis.from_url(
-            "redis://localhost:6379",
+            f"redis://localhost:{port}",
             password=password,
             decode_responses=True  # Автоматически декодировать ответы в строки
         )
 
-        # Проверяем подключение
         try:
             if await self.aping():
                 print("✅ Успешно подключились к Redis")
@@ -34,10 +33,9 @@ class RedisDB():
 
     async def aping(self) -> bool:
         if self.client is None:
-            raise Exception("Сначала нужно подключиться к Redis")
+            raise ConnectionError("Сначала нужно подключиться к Redis")
 
         result = self.client.ping()
         if isinstance(result, Awaitable):
             return await result
-
-        raise Exception("Sync connection to Redis!")
+        return result
