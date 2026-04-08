@@ -7,8 +7,8 @@ from core.utils.env_parser import EnvParser
 BASE_DIR = Path(__file__).parent.parent
 
 load_dotenv(BASE_DIR / 'vk_bot/.env')
-load_dotenv(BASE_DIR / 'mongo/.mongo.env')
-load_dotenv(BASE_DIR / 'storage/.storage.env')
+load_dotenv(BASE_DIR / 'mongo/.env')
+load_dotenv(BASE_DIR / 'storage/.env')
 
 VK_TOKEN = EnvParser.get_env('VK_TOKEN', str)
 

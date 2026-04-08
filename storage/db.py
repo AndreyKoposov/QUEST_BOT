@@ -9,8 +9,7 @@ class RedisDB():
     def __init__(self):
         self.__client: Optional[redis.Redis] = None
 
-    async def connect(self, password: str) -> redis.Redis:
-        """Подключение к Redis"""
+    async def connect(self, password: str):
         self.__client = await redis.from_url(
             "redis://localhost:6379",
             password=password,
@@ -24,53 +23,48 @@ class RedisDB():
             print(f"❤️ Ошибка подключения к Redis: {e}")
             raise
 
-        return self.__client
-
     async def disconnect(self):
-        """Закрытие соединения"""
         if self.__client:
             await self.__client.aclose()
             print("❤️ Соединение с Redis закрыто")
 
-    async def get(self, peer_id: int) -> tuple[int, dict] | None:
-        key = self._make_key(peer_id)
-        data = None
-
-        if self.__client:
-            data = await self.__client.get(key)
+    async def get(self, peer_id: int) -> tuple[int, dict]:
+        key = self.__make_key(peer_id)
+        data = await self.client.get(key)
 
         if data is None:
-            return None
+            return -1, {}
 
         parsed = json.loads(data)
-        state = parsed.get("state")
+        state = parsed.get("state", -1)
         payload = parsed.get("payload", {})
 
         return state, payload
 
     async def set(self, peer_id: int, state: int, **payload):
-        key = self._make_key(peer_id)
+        key = self.__make_key(peer_id)
         data = json.dumps({
             "state": state,
             "payload": payload
         }, default=str)
 
-        if self.__client:
-            await self.__client.set(key, data)
+        await self.client.set(key, data)
 
     async def delete(self, peer_id: int):
-        key = self._make_key(peer_id)
-        if self.__client:
-            await self.__client.delete(key)
+        key = self.__make_key(peer_id)
+        await self.client.delete(key)
 
-    def _make_key(self, peer_id: int):
+    @property
+    def client(self) -> redis.Redis:
+        if self.__client is None:
+            raise ConnectionError("❤️ Нет подключения к Redis")
+        return self.__client
+
+    def __make_key(self, peer_id: int):
         return f'state<{peer_id}>'
 
     async def __aping(self) -> bool:
-        if self.__client is None:
-            raise ConnectionError("❤️ Нет подключения к Redis")
-
-        result = self.__client.ping()
+        result = self.client.ping()
         if isinstance(result, Awaitable):
             return await result
         return result

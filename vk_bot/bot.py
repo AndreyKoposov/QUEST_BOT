@@ -1,83 +1,58 @@
 from vkbottle import PhotoMessageUploader, Keyboard, Text, LoopWrapper
-from vkbottle.bot import Bot, Message
+from vkbottle.bot import Bot
 
-from vk_bot.config import VK_TOKEN, BASE_DIR, M_USER, M_PSWRD, M_DB, R_PSWRD
+from vk_bot.routes import labelers
+from vk_bot.config import VK_TOKEN, M_USER, M_PSWRD, M_DB, R_PSWRD
 from vk_bot.redis_dispenser import RedisStateDispenser
-from vk_bot.states import States
-from vk_bot.commands import labeler
-from core.game.session import GameSession
 from mongo.db import mongo
 from storage.db import storage
 
 
-bot = Bot(token=VK_TOKEN)
-bot.state_dispenser = RedisStateDispenser(storage)
-bot.labeler = labeler
-photo_uploader = PhotoMessageUploader(bot.api)
+class VKBot:
+    def __init__(self):
+        self.bot = Bot(token=VK_TOKEN)
+        self.mongo = mongo
+        self.storage = storage
+        self.uploader = PhotoMessageUploader(self.bot.api)
+        self.bot.state_dispenser = RedisStateDispenser(self.storage)
 
-@bot.on.message(text='/create_character')
-async def create_handler(message: Message):
-    await bot.state_dispenser.set(message.peer_id, States.WAIT_NAME)
-    await message.answer("Введите имя вашего персонажа")
+        self.__set_loop_wrapper()
+        self.__set_labelers()
 
-@bot.on.message(state=States.WAIT_NAME)
-async def name_handler(message: Message):
-    name = message.text.strip()
+    def run(self):
+        self.bot.loop_wrapper.run()
 
-    if len(name) < 3:
-        return await message.answer('Имя слишком короткое!')
-    if len(name) > 12:
-        return await message.answer('Имя слишком длинное!')
+    def build_keyboard(self, btns: list[list[str]]) -> str:
+        kb = Keyboard()
+        for row in btns:
+            for btn in row:
+                kb.add(Text(btn))
+            kb.row()
+        return kb.get_json()
 
-    await bot.state_dispenser.set(message.peer_id, States.WAIT_INPUT)
-    await message.answer(f"Персонаж создан!\nПривет, {name}!")
+    def __set_loop_wrapper(self):
+        lw = LoopWrapper()
+        lw.on_startup.append(self.__startup_task())
+        lw.add_task(self.__main_task())
+        lw.on_shutdown.append(self.__shutdown_task())
 
-@bot.on.message(state=States.WAIT_INPUT)
-async def input_handler(message: Message):
-    await bot.state_dispenser.set(message.peer_id, States.BLOCKED)
+        self.bot.loop_wrapper = lw
 
-    session = GameSession()
-    msgs, btns, image = await session.process(message.text)
-    await message.answer(msgs[0],
-                         keyboard=build_keyboard(btns),
-                         attachment=await photo_uploader.upload(str(BASE_DIR / f'assets/media/{image}')))
+    def __set_labelers(self):
+        for labeler in labelers:
+            self.bot.labeler.load(labeler)
 
-    await bot.state_dispenser.set(message.peer_id, States.WAIT_INPUT)
+    async def __startup_task(self):
+        print("Bot started")
+        await self.mongo.connect(M_USER, M_PSWRD, M_DB)
+        await self.storage.connect(R_PSWRD)
 
-@bot.on.message(state=States.BLOCKED)
-async def blocked_handler(message: Message):
-    await message.answer('Ваше сообщение обрабатывается, подождите!')
+    async def __main_task(self):
+        await self.bot.run_polling()
 
-def build_keyboard(btns: list[list[str]]) -> str:
-    kb = Keyboard()
-    for row in btns:
-        for btn in row:
-            kb.add(Text(btn))
-        kb.row()
-    return kb.get_json()
+    async def __shutdown_task(self):
+        await self.storage.disconnect()
+        await self.mongo.disconnect()
+        print("Bot stoped")
 
-async def startup_task():
-    # mongo_client = await mongo.connect(MONGO_USER, MONGO_PSWRD, MONGO_HOST, MONGO_PORT, MONGO_DB)
-    # redis_client = await redis.connect(REDIS_PORT, REDIS_PSWRD)
-
-    # bot.state_dispenser = RedisStateDispenser(redis_client)
-    print("Bot started")
-    await mongo.connect(M_USER, M_PSWRD, M_DB)
-    await storage.connect(R_PSWRD)
-
-async def bot_task():
-    await bot.run_polling()
-
-async def shutdown_task():
-    await storage.disconnect()
-    await mongo.disconnect()
-    print("Bot stoped")
-
-lw = LoopWrapper()
-lw.on_startup.append(startup_task())
-lw.add_task(bot_task())
-lw.on_shutdown.append(shutdown_task())
-bot.loop_wrapper = lw
-
-def run():
-    lw.run()
+vk = VKBot()

@@ -1,5 +1,5 @@
-from vk_bot.bot import run
+from vk_bot.bot import vk
 
 
 if __name__ == "__main__":
-    run()
+    vk.run()

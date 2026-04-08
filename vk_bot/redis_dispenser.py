@@ -13,19 +13,13 @@ class RedisStateDispenser(BuiltinStateDispenser):
         self.storage = storage
 
     async def get(self, peer_id: int) -> StatePeer | None:
-        result = await self.storage.get(peer_id)
-
-        if result is None:
-            return None
-
-        state = result[0]
-        payload = result[1]
+        state, payload = await self.storage.get(peer_id)
 
         return StatePeer(
             peer_id=peer_id,
             state=States(state),
             payload=payload
-        )
+        ) if state != -1 else None
 
     async def set(self, peer_id: int, state: BaseStateGroup, **payload):
         await self.storage.set(peer_id, state.value, **payload)
