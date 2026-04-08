@@ -1,9 +1,14 @@
 from vkbottle.bot import Message
 
-from vk_bot.bot import bot
+from vkbottle.bot import BotLabeler
+from mongo.collections import User
+from mongo.db import mongo
+from storage.db import storage
 
 
-@bot.on.private_message(text='/help')
+labeler = BotLabeler()
+
+@labeler.private_message(text='/help')
 async def help_(message: Message):
     await message.answer(
         "Доступные команды:"
@@ -14,22 +19,38 @@ async def help_(message: Message):
         "\n\t/delete - удалить аккаунт"
     )
 
-@bot.on.private_message(text='/start')
+@labeler.private_message(text='/start')
 async def start(message: Message):
-    pass
+    peer_id = message.peer_id
+    user = await mongo.get(User, peer_id)
+    if user:
+        await message.answer("Аккаунт уже создан!")
+    else:
+        user = User(peer_id)
+        await mongo.create(User, user)
+        await message.answer("Аккаунт успешно создан!")
 
-@bot.on.private_message(text='/account')
+@labeler.private_message(text='/account')
 async def account(message: Message):
-    pass
+    peer_id = message.peer_id
+    user = await mongo.get(User, peer_id)
+    if user:
+        await message.answer(f'id: {user.peer_id}\n💎 {user.diamonds}\nLogin at: {user.created_at}')
+    else:
+        await message.answer("Вы ещё не создали аккаунт!")
 
-@bot.on.private_message(text='/reset')
+@labeler.private_message(text='/reset')
 async def reset(message: Message):
-    pass
+    await storage.delete(message.peer_id)
+    await message.answer("Бот перезагрузился!")
 
-@bot.on.private_message(text='/about')
+@labeler.private_message(text='/about')
 async def about(message: Message):
-    pass
+    await message.answer("Это игра-бот в жанре текстовый квест с участием ИИ.\
+                         Начние игру и пишите что угодно, а мир вам ответит!")
 
-@bot.on.private_message(text='/delete')
+@labeler.private_message(text='/delete')
 async def delete(message: Message):
-    pass
+    peer_id = message.peer_id
+    await mongo.delete(User, peer_id)
+    await message.answer("Аккаунт успешно удалён!")

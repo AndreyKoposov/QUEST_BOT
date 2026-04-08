@@ -6,19 +6,16 @@ from core.utils.env_parser import EnvParser
 
 BASE_DIR = Path(__file__).parent.parent
 
-load_dotenv(BASE_DIR / '.env')
-load_dotenv(BASE_DIR / 'mongo/.env')
-load_dotenv(BASE_DIR / 'storage/.env')
+load_dotenv(BASE_DIR / 'vk_bot/.env')
+load_dotenv(BASE_DIR / 'mongo/.mongo.env')
+load_dotenv(BASE_DIR / 'storage/.storage.env')
 
 VK_TOKEN = EnvParser.get_env('VK_TOKEN', str)
 
-MONGO_USER = EnvParser.get_env('MONGO_USER', str)
-MONGO_PSWRD = EnvParser.get_env('MONGO_PSWRD', str)
-MONGO_DB = EnvParser.get_env('MONGO_DB', str)
-MONGO_HOST = EnvParser.get_env('MONGO_HOST', str)
-MONGO_PORT = EnvParser.get_env('MONGO_PORT', int)
+M_USER = EnvParser.get_env('MONGO_INITDB_ROOT_USERNAME', str)
+M_PSWRD = EnvParser.get_env('MONGO_INITDB_ROOT_PASSWORD', str)
+M_DB = EnvParser.get_env('MONGO_INITDB_DATABASE', str)
 
-REDIS_PSWRD = EnvParser.get_env('REDIS_PSWRD', str)
-REDIS_PORT = EnvParser.get_env('REDIS_PORT', int)
+R_PSWRD = EnvParser.get_env('R_PSWRD', str)
 
 DEBUG = EnvParser.get_env('DEBUG', bool, False)
