@@ -10,7 +10,7 @@ class MongoDB():
         self.__db = None
 
     async def connect(self, user: str, pswrd: str, db: str):
-        connection_string = f"mongodb://{user}:{pswrd}@localhost:27017"
+        connection_string = f"mongodb://{user}:{pswrd}@mongo:27017"
 
         self.__client = AsyncIOMotorClient(connection_string)
 

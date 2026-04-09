@@ -9,7 +9,7 @@ class RedisDB():
 
     async def connect(self, password: str):
         self.__client = await redis.from_url(
-            "redis://localhost:6379",
+            "redis://redis:6379",
             password=password,
             decode_responses=True  # Автоматически декодировать ответы в строки
         )

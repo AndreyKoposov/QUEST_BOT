@@ -1,10 +1,15 @@
 services:
+  vk_bot:
+    build:
+      dockerfile: vk_bot/Dockerfile
+    networks:
+      - app_network
+    volumes:
+      - ./assets:/app/assets
   mongo:
     image: mongo:latest
     restart: always
-    env_file: "./mongo/.mongo.env"
-    ports:
-      - "27017:27017"
+    env_file: "./mongo/.env"
     volumes:
       - quest_mongo:/data/db
     networks:
@@ -15,9 +20,7 @@ services:
       context: ./storage
       dockerfile: Dockerfile.redis
     restart: always
-    env_file: "./storage/.storage.env"
-    ports:
-      - "6379:6379"
+    env_file: "./storage/.env"
     volumes:
       - quest_redis:/data
     networks:
