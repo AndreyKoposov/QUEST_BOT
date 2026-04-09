@@ -2,13 +2,11 @@ from setuptools import setup
 
 setup(
     name='core',
-    version='0.1',
-    description='A sample Python package',
-    # author='John Doe',
-    # author_email='jdoe@example.com',
-    # packages=['my_package'],
-    # install_requires=[
-    #     'numpy',
-    #     'pandas'
-    # ],
+    version='0.1.0',
+    description='Core package',
+    packages=['game', 'utils', 'mongo', 'storage'],
+    install_requires=[
+        'redis',
+        'motor'
+    ],
 )

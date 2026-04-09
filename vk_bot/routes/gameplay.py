@@ -3,7 +3,7 @@ from vkbottle.bot import BotLabeler, Message
 from vk_bot.config import BASE_DIR
 from vk_bot.states import States
 from vk_bot.bot import vk
-from core.game.session import GameSession
+from core.game import GameSession
 
 
 bl = BotLabeler()

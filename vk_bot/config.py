@@ -1,7 +1,7 @@
 from pathlib import Path
 from dotenv import load_dotenv
 
-from core.utils.env_parser import EnvParser
+from core.utils import EnvParser
 
 
 BASE_DIR = Path(__file__).parent.parent

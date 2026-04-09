@@ -2,8 +2,8 @@ from vkbottle.bot import Message, BotLabeler
 
 from vk_bot.bot import vk
 from vk_bot.states import States
-from core.mongo.client import mongo
-from core.mongo.collections import User
+from core.mongo import mongo
+from core.mongo import User
 
 
 bl = BotLabeler()

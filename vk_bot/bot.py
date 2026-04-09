@@ -3,7 +3,7 @@ from vkbottle.bot import Bot, BotLabeler
 
 from vk_bot.config import VK_TOKEN, M_USER, M_PSWRD, M_DB, R_PSWRD
 from vk_bot.redis_dispenser import RedisStateDispenser
-from core.mongo.client import mongo
+from core.mongo import mongo
 from core.storage import storage
 
 
