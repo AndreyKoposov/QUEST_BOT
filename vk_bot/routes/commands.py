@@ -1,8 +1,9 @@
 from vkbottle.bot import Message, BotLabeler
 
-from mongo.collections import User
-from mongo.db import mongo
-from storage.db import storage
+from vk_bot.bot import vk
+from vk_bot.states import States
+from core.mongo.client import mongo
+from core.mongo.collections import User
 
 
 bl = BotLabeler()
@@ -27,8 +28,9 @@ async def start(message: Message):
     else:
         user = User(peer_id)
         await mongo.create(User, user)
-        await message.answer("Аккаунт успешно создан! Давай теперь создадим твоего персонажа.\
-                             Введи имя своего персонажа!")
+        await vk.bot.state_dispenser.set(peer_id, States.WAIT_NAME)
+        await message.answer("Аккаунт успешно создан! Давай теперь создадим твоего персонажа."\
+                             "\nВведи имя своего персонажа!")
 
 @bl.private_message(text='/account')
 async def account(message: Message):
@@ -41,8 +43,18 @@ async def account(message: Message):
 
 @bl.private_message(text='/reset')
 async def reset(message: Message):
-    await storage.delete(message.peer_id)
+    await vk.bot.state_dispenser.delete(message.peer_id)
     await message.answer("Бот перезагрузился!")
+
+@bl.private_message(text='/play')
+async def play(message: Message):
+    peer_id = message.peer_id
+    user = await mongo.get(User, peer_id)
+    if user is None:
+        await message.answer("Вы ещё не создали аккаунт!")
+    else:
+        await vk.bot.state_dispenser.set(peer_id, States.WAIT_INPUT)
+        await message.answer("Бот в игровом режиме!")
 
 @bl.private_message(text='/about')
 async def about(message: Message):

@@ -4,8 +4,6 @@ import redis.asyncio as redis
 
 
 class RedisDB():
-    """Простой класс для работы с Redis"""
-
     def __init__(self):
         self.__client: Optional[redis.Redis] = None
 

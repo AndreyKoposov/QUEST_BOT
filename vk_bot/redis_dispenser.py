@@ -3,7 +3,7 @@ from vkbottle.dispatch import BuiltinStateDispenser
 from vkbottle.dispatch.dispenser.base import StatePeer
 
 from vk_bot.states import States
-from storage.db import RedisDB
+from core.storage import RedisDB
 
 
 class RedisStateDispenser(BuiltinStateDispenser):
