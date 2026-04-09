@@ -2,10 +2,15 @@ services:
   vk_bot:
     build:
       dockerfile: vk_bot/Dockerfile
+    env_file:
+      - vk_bot/.env
+      - mongo/.env
+      - storage/.env
     networks:
       - app_network
     volumes:
       - ./assets:/app/assets
+
   mongo:
     image: mongo:latest
     restart: always
@@ -18,7 +23,7 @@ services:
   redis:
     build:
       context: ./storage
-      dockerfile: Dockerfile.redis
+      dockerfile: Dockerfile
     restart: always
     env_file: "./storage/.env"
     volumes:

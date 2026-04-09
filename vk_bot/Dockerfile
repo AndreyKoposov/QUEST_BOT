@@ -27,8 +27,6 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY vk_bot ./vk_bot
 COPY core ./core
-COPY mongo ./mongo
-COPY storage ./storage
 
 USER appuser
 

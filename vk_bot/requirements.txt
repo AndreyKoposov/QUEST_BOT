@@ -1,2 +1,3 @@
+git+https://github.com/AndreyKoposov/QUEST_BOT.git@dev#subdirectory=core
 vkbottle
 python-dotenv

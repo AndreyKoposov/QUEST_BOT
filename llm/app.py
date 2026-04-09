@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request, Response
 
 
-app = FastAPI(title='AI Service')
+app = FastAPI(title='LLM')
 
 @app.get('/chat')
 def chat(request: Request):
