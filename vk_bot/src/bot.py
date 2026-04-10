@@ -1,10 +1,10 @@
 from vkbottle import PhotoMessageUploader, Keyboard, Text, LoopWrapper
 from vkbottle.bot import Bot, BotLabeler
 
-from vk_bot import VK_TOKEN, M_USER, M_PSWRD, M_DB, R_PSWRD
-from vk_bot import RedisStateDispenser
 from core.mongo import mongo
 from core.shared import storage
+from .config import VK_TOKEN, M_USER, M_PSWRD, M_DB, R_PSWRD
+from .redis_dispenser import RedisStateDispenser
 
 
 class VKBot:

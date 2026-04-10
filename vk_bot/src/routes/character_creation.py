@@ -1,7 +1,7 @@
 from vkbottle.bot import Message, BotLabeler
 
-from vk_bot import States
-from vk_bot import vk
+from ..states import States
+from ..bot import vk
 
 
 bl = BotLabeler()

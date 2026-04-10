@@ -12,7 +12,6 @@ venv/
 venv/
 
 # Ignore build and distribution directories
-build/
 dist/
 *.egg-info/
 

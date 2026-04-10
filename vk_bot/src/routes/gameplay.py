@@ -1,9 +1,9 @@
 from vkbottle.bot import BotLabeler, Message
 
-from vk_bot import BASE_DIR
-from vk_bot import States
-from vk_bot import vk
 from core.game import GameSession
+from ..config import BASE_DIR
+from ..states import States
+from ..bot import vk
 
 
 bl = BotLabeler()
