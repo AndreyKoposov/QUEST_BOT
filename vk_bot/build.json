@@ -1,0 +1,5 @@
+{
+  "core": [
+    "game", "mongo", "shared", "utils"
+  ]
+}

@@ -1,1 +1,1 @@
-from core.src.game.session import GameSession
+from .src.session import GameSession

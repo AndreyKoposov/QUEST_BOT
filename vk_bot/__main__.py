@@ -1,5 +1,5 @@
-from vk_bot.bot import vk
-from vk_bot.routes import labelers
+from vk_bot import vk
+from vk_bot import labelers
 
 
 if __name__ == "__main__":

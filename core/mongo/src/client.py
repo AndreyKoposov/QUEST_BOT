@@ -1,7 +1,7 @@
 from typing import Optional, Any, Type
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from .wrapper import Wrapper, T
+from wrapper import Wrapper, T
 
 
 class MongoDB():

@@ -2,8 +2,8 @@ from vkbottle import BaseStateGroup
 from vkbottle.dispatch import BuiltinStateDispenser
 from vkbottle.dispatch.dispenser.base import StatePeer
 
-from vk_bot.states import States
-from core.storage import RedisDB
+from vk_bot import States
+from core.shared import RedisDB
 
 
 class RedisStateDispenser(BuiltinStateDispenser):

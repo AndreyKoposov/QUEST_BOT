@@ -1,1 +1,1 @@
-from core.src.utils.env_parser import EnvParser
+from .src.env_parser import EnvParser

@@ -1,7 +1,7 @@
 from vkbottle.bot import Message, BotLabeler
 
-from vk_bot.bot import vk
-from vk_bot.states import States
+from vk_bot import vk
+from vk_bot import States
 from core.mongo import mongo
 from core.mongo import User
 

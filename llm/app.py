@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Response
 
 
 app = FastAPI(title='LLM')
 
 @app.get('/chat')
-def chat(request: Request):
-    pass
+def chat():
+    return Response(status_code=200)
 
 @app.head('/ping')
 def ping():

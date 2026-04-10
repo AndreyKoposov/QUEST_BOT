@@ -1,8 +1,8 @@
 from vkbottle.bot import BotLabeler, Message
 
-from vk_bot.config import BASE_DIR
-from vk_bot.states import States
-from vk_bot.bot import vk
+from vk_bot import BASE_DIR
+from vk_bot import States
+from vk_bot import vk
 from core.game import GameSession
 
 

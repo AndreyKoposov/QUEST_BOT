@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from core.utils import EnvParser
 
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 
 load_dotenv(BASE_DIR / 'vk_bot/.env')
 load_dotenv(BASE_DIR / 'mongo/.env')

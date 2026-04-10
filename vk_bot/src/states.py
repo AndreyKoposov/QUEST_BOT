@@ -1,6 +1,6 @@
 from vkbottle.dispatch import BaseStateGroup
 
-from core import BaseStates
+from core.shared import BaseStates
 
 
 class States(BaseStateGroup):
