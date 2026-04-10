@@ -9,7 +9,7 @@ from .redis_dispenser import RedisStateDispenser
 
 class VKBot:
     def __init__(self):
-        self.bot = Bot(token=VK_TOKEN)
+        self.bot = Bot(token=VK_TOKEN.get_secret_value())
         self.uploader = PhotoMessageUploader(self.bot.api)
         self.bot.state_dispenser = RedisStateDispenser(storage)
 
@@ -40,8 +40,8 @@ class VKBot:
 
     async def __startup_task(self):
         print("Bot started")
-        await mongo.connect(M_USER, M_PSWRD, M_DB)
-        await storage.connect(R_PSWRD)
+        await mongo.connect(M_USER, M_PSWRD.get_secret_value(), M_DB)
+        await storage.connect(R_PSWRD.get_secret_value())
 
     async def __main_task(self):
         await self.bot.run_polling()

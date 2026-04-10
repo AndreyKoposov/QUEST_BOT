@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 
 
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).parent.parent
 src: str = 'src'
 __init__py: str = '__init__.py'
 __main__py: str = '__main__.py'
@@ -64,4 +64,4 @@ def build_service(service: str):
         file.write(requirements)
 
 if __name__ == '__main__':
-    print('run')
+    main()

@@ -34,6 +34,6 @@ class AIEngine():
         match ENGINE:
             case 'GigaChat':
                 from .engines import gigachat
-                return gigachat.GigaChatEngine(API_KEY, MODEL, TEMP)
+                return gigachat.GigaChatEngine(API_KEY.get_secret_value(), MODEL, TEMP)
             case _:
                 raise ValueError("Unknown AI engine!")
