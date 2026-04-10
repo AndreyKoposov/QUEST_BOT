@@ -7,10 +7,10 @@ services:
       - vk_bot/.env
       - mongo/.env
       - storage/.env
-    networks:
-      - app_network
     volumes:
       - ./assets:/app/assets
+    networks:
+      - app_network
 
   mongo:
     image: mongo:latest

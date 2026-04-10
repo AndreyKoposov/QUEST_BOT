@@ -10,12 +10,12 @@ load_dotenv(BASE_DIR / 'vk_bot/.env')
 load_dotenv(BASE_DIR / 'mongo/.env')
 load_dotenv(BASE_DIR / 'storage/.env')
 
-VK_TOKEN = EnvParser.get_env('VK_TOKEN', str)
+VK_TOKEN = EnvParser.get('VK_TOKEN', str)
 
-M_USER = EnvParser.get_env('MONGO_INITDB_ROOT_USERNAME', str)
-M_PSWRD = EnvParser.get_env('MONGO_INITDB_ROOT_PASSWORD', str)
-M_DB = EnvParser.get_env('MONGO_INITDB_DATABASE', str)
+M_USER = EnvParser.get('MONGO_INITDB_ROOT_USERNAME', str)
+M_PSWRD = EnvParser.get('MONGO_INITDB_ROOT_PASSWORD', str)
+M_DB = EnvParser.get('MONGO_INITDB_DATABASE', str)
 
-R_PSWRD = EnvParser.get_env('R_PSWRD', str)
+R_PSWRD = EnvParser.get('R_PSWRD', str)
 
-DEBUG = EnvParser.get_env('DEBUG', bool, False)
+DEBUG = EnvParser.get('DEBUG', bool, False)

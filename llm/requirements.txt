@@ -1,1 +1,4 @@
 fastapi
+gigachat
+uvicorn
+gunicorn

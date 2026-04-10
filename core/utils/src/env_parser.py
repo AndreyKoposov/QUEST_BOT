@@ -24,7 +24,7 @@ class EnvParser():
             return None
 
     @classmethod
-    def get_env(cls, key: str, to_type: Type[T] = str, default: Optional[T] = None) -> T:
+    def get(cls, key: str, to_type: Type[T] = str, default: Optional[T] = None) -> T:
         value = getenv(key)
         parsed = cls.parse(value, to_type) if value else None
 
