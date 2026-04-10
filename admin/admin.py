@@ -64,4 +64,4 @@ def build_service(service: str):
         file.write(requirements)
 
 if __name__ == '__main__':
-    main()
+    print('run')
