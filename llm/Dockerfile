@@ -30,4 +30,4 @@ COPY llm/ ./llm/
 
 USER appuser
 
-CMD ["gunicorn", "llm.app", "--workers", "1", "--worker-class", "uvicorn.workers.UvicornWorker", "--timeout", "240", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "llm:app", "--workers", "1", "--worker-class", "uvicorn.workers.UvicornWorker", "--timeout", "240", "--bind", "0.0.0.0:8000"]

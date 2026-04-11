@@ -3,7 +3,6 @@ import asyncio
 import functools
 
 from .config import ENGINE, API_KEY, MODEL, TEMP
-# from src.app.ai.prompts import p_entities, p_stages, p_transitions, p_params
 from .preprocessor import Preprocessor
 
 

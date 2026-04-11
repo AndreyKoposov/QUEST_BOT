@@ -1,7 +1,6 @@
 services:
   vk_bot:
     build:
-      context: .
       dockerfile: vk_bot/Dockerfile
     env_file:
       - vk_bot/.env
@@ -9,6 +8,14 @@ services:
       - storage/.env
     volumes:
       - ./assets:/app/assets
+    networks:
+      - app_network
+
+  llm:
+    build:
+      dockerfile: llm/Dockerfile
+    env_file:
+      - llm/.env
     networks:
       - app_network
 
