@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from core.utils import EnvParser, SecretStr
+from utils import EnvParser, SecretStr
 
 
 BASE_DIR = Path(__file__).parent.parent.parent

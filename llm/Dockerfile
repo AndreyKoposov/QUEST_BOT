@@ -18,10 +18,15 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
-COPY build/ .
+COPY llm/requirements.txt ./llm/
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r llm/requirements.txt
+
+COPY utils/ ./utils/
+RUN pip install --no-cache-dir -r utils/requirements.txt
+
+COPY llm/ ./llm/
 
 USER appuser
 

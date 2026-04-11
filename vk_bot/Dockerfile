@@ -18,10 +18,18 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
-COPY build/ .
+COPY vk_bot/requirements.txt ./vk_bot/
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r vk_bot/requirements.txt
+
+COPY core/ ./core/
+RUN pip install --no-cache-dir -r core/requirements.txt
+
+COPY utils/ ./utils/
+RUN pip install --no-cache-dir -r utils/requirements.txt
+
+COPY vk_bot/ ./vk_bot/
 
 USER appuser
 

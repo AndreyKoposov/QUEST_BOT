@@ -1,8 +1,8 @@
 services:
   vk_bot:
     build:
-      context: vk_bot
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: vk_bot/Dockerfile
     env_file:
       - vk_bot/.env
       - mongo/.env
