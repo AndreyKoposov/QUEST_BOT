@@ -1,6 +1,7 @@
 from typing import Optional, Any, Type
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from utils import logger
 from .wrapper import Wrapper, T
 
 
@@ -11,22 +12,23 @@ class MongoDB():
 
     async def connect(self, user: str, pswrd: str, db: str):
         connection_string = f"mongodb://{user}:{pswrd}@mongo:27017"
-
         self.__client = AsyncIOMotorClient(connection_string)
 
         try:
             await self.__client.admin.command('ping')
-            print("🌿 Успешное подключение к MongoDB")
+            logger.info("Connected to MongoDB")
         except Exception as e:
-            print(f"🌿 Ошибка подключения: {e}")
-            raise
+            logger.error("Failed to connect to MongoDB", user=user, db=db)
+            raise ConnectionError from e
 
         self.__db = self.__client.get_database(db)
 
     async def disconnect(self):
         if self.__client:
             self.__client.close()
-            print("🌿 Соединение с MongoDB закрыто")
+            logger.info("Connection with MongoDB closed")
+        else:
+            logger.warning("Trying to close connection, but connection already closed!")
 
     async def get(self, collection: Type[T], obj_id: Any) -> Optional[T]:
         wrap = Wrapper(collection)
@@ -51,9 +53,10 @@ class MongoDB():
         await objs.delete_one({wrap.key: obj_id})
 
     async def __get_collection(self, name: str):
-        """Получение коллекции"""
         if self.__db is None:
-            raise ConnectionError("🌿 Нет подключения к базе данных")
+            msg = "No connection with database"
+            logger.error(msg, client=str(self.__client), collection=name)
+            raise ConnectionError(msg)
         return self.__db[name]
 
 mongo = MongoDB()

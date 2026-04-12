@@ -3,6 +3,7 @@ from vkbottle.bot import Bot, BotLabeler
 
 from core.mongo import mongo
 from core.shared import storage
+from utils import logger
 from .config import VK_TOKEN, M_USER, M_PSWRD, M_DB, R_PSWRD
 from .redis_dispenser import RedisStateDispenser
 
@@ -39,7 +40,7 @@ class VKBot:
         self.bot.loop_wrapper = lw
 
     async def __startup_task(self):
-        print("Bot started")
+        logger.info("Bot started")
         await mongo.connect(M_USER, M_PSWRD.get_secret_value(), M_DB)
         await storage.connect(R_PSWRD.get_secret_value())
 
@@ -49,6 +50,6 @@ class VKBot:
     async def __shutdown_task(self):
         await storage.disconnect()
         await mongo.disconnect()
-        print("Bot stoped")
+        logger.info("Bot stoped")
 
 vk = VKBot()
